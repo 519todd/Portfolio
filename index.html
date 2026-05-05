@@ -1528,35 +1528,34 @@
 })();
 
 /* ── WORD ROTATE — mirrors AnimatePresence mode="wait" ── */
-(function() {
-  const phrases = document.querySelectorAll('.word-rotate-phrase');
-  if (!phrases.length) return;
-  let cur = 0;
-
-  function next() {
-    const prev = cur;
-    phrases[prev].classList.remove('wr-enter');
-    phrases[prev].classList.add('wr-exit');
-    setTimeout(() => {
-      phrases[prev].classList.remove('wr-exit');   /* exit done → opacity:0 */
-      cur = (cur + 1) % phrases.length;
-      phrases[cur].classList.add('wr-enter');
-      setTimeout(next, 2000);                       /* display for 2 s, then rotate */
-    }, 200);                                         /* wait for exit animation */
-  }
-
-  phrases[cur].classList.add('wr-enter');
-  setTimeout(next, 2000);
-})();
+/* flower rotation synced via module script below */
 </script>
 
 <script type="module">
   import { animate } from "https://cdn.jsdelivr.net/npm/motion@12.38.0/+esm";
-  animate(
-    "#hero-flower",
-    { rotate: 90 },
-    { type: "spring", repeat: Infinity, repeatDelay: 2 }
-  );
+
+  const phrases = document.querySelectorAll('.word-rotate-phrase');
+  if (phrases.length) {
+    let cur = 0;
+    let flowerAngle = 0;
+
+    function next() {
+      const prev = cur;
+      phrases[prev].classList.remove('wr-enter');
+      phrases[prev].classList.add('wr-exit');
+      setTimeout(() => {
+        phrases[prev].classList.remove('wr-exit');
+        cur = (cur + 1) % phrases.length;
+        phrases[cur].classList.add('wr-enter');
+        flowerAngle += 90;
+        animate('#hero-flower', { rotate: flowerAngle }, { type: 'spring' });
+        setTimeout(next, 2000);
+      }, 200);
+    }
+
+    phrases[cur].classList.add('wr-enter');
+    setTimeout(next, 2000);
+  }
 </script>
 
 <!-- ════ FOOTER ════ -->
