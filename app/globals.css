@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.case-x-gutter {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.case-gap {
+  gap: 4rem;
+}
+
+.case-mt {
+  margin-top: 6rem;
+}
+
+@media (min-width: 768px) {
+  .case-x-gutter {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .case-x-gutter {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+/* h6 replacement — UI label/caption, medium weight */
+.p-500 {
+  font-size: var(--cap-size, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--ink-secondary, #58534D);
+  margin-bottom: 0.5rem;
+}
+
+/* Hide scrollbar for carousel */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

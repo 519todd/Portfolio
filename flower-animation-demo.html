@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purple Flower Animation</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0a0010;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flower {
+      width: 100px;
+      height: 100px;
+    }
+
+    .flower img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="flower">
+    <img src="Portfoilo assets/Purple flower.png" alt="Purple flower">
+  </div>
+
+  <script type="module">
+    import { animate } from "https://cdn.jsdelivr.net/npm/motion@12.38.0/+esm"
+
+    animate(
+      ".flower",
+      { rotate: 90 },
+      { type: "spring", repeat: Infinity, repeatDelay: 0.2 }
+    )
+  </script>
+</body>
+</html>

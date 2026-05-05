@@ -1,0 +1,2416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forma AI Claim · Todd Wu</title>
+  <link rel="icon" type="image/png" href="Portfoilo%20assets/Purple flower.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    :root {
+      /* ── DESIGN SYSTEM TOKENS ── */
+      --bg:               #ffffff;
+      --bg-surface:       #f5f5f3;
+      --ink:              #1c1c1e;
+      --ink-secondary:    #58534D;
+      --ink-tertiary:     #808080;
+      --accent:           #4E008E;
+      --border:           #e8e8e8;
+
+      /* Legacy aliases */
+      --fg:               var(--ink);
+      --text-secondary:   #171717;
+      --text-tertiary:    var(--ink-secondary);
+      --surface:          var(--bg-surface);
+      --purple:           var(--accent);
+      --purple-secondary: #9B5DE5;
+      --purple-light:     rgba(78,0,142,.06);
+      --purple-border:    rgba(78,0,142,.16);
+
+      --sidebar-w:        212px;
+      --ease-fast:        cubic-bezier(.62,.61,.02,1);
+      --ease-spring:      cubic-bezier(.16,1,.3,1);
+
+      /* ── TYPOGRAPHY TOKENS ── */
+      --font:        -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+      --h1-size:     clamp(2.25rem, 5vw, 2.5rem);
+      --h2-size:     clamp(1.625rem, 3.2vw, 2rem);
+      --h3-size:     clamp(1.0625rem, 1.8vw, 1.1875rem);
+      --p-size:      1.0625rem;
+      --ui-size:     1rem;
+      --cap-size:    0.75rem;
+      --small-size:  0.875rem;
+      --xs-size:     0.6875rem;
+      --display-size: 1.5rem;
+      --ink-55:      #636366;
+      --ink-30:      #aeaeb2;
+      --ink-12:      #e5e5ea;
+      --bg-fill:     #f2f2f7;
+
+      /* ── SPACING TOKENS ── */
+      --space-05:  4px;    /* 極小間距 */
+      --space-1:   8px;    /* 基準單位 */
+      --space-2:   16px;   /* 基準 x2 */
+      --space-3:   24px;   /* 基準 x3 */
+      --space-4:   32px;   /* 基準 x4 */
+      --space-5:   48px;   /* 內容區塊 */
+      --space-6:   64px;   /* 大區塊 */
+      --space-7:   80px;   /* 頁面 gutter */
+      --space-8:   120px;  /* 節點間隔 */
+      --space-9:   240px;  /* padding-top */
+
+      --shadow-card:
+        0 0 0 1px rgba(0,0,0,0.02),
+        0 1px 2px rgba(0,0,0,0.04),
+        0 4px 8px rgba(0,0,0,0.04),
+        0 12px 32px rgba(0,0,0,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+    ::selection { color: #fff; background: var(--purple); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    .H1-700 { font-size: var(--h1-size); font-weight: 700; line-height: 1.06; letter-spacing: -0.03em; margin-bottom: var(--space-4); color: #1c1c1e; }
+    .H3-500 { font-size: var(--h3-size); font-weight: 500; letter-spacing: -0.0022em; line-height: 1.40; margin-bottom: var(--space-2); color: #1c1c1e; }
+    .H3-600 { font-size: var(--h3-size); font-weight: 600; letter-spacing: -0.01em; line-height: 1.40; color: #1c1c1e; margin-bottom: var(--space-1); }
+    .P-400-B  { font-size: var(--p-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.75; margin-bottom: var(--space-2); color: #1c1c1e; }
+    .P-400-G  { font-size: var(--p-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.2; margin-bottom: var(--space-2); color: #58534D; }
+    .P-400-G-List { font-size: var(--p-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.2; margin-bottom: var(--space-1); color: #58534D; }
+    .P-400-P  { font-size: var(--p-size); font-weight: 400; letter-spacing: 0em; line-height: 1.2; margin-bottom: var(--space-2); color: #4E008E; }
+    .P-400-SP { font-size: var(--ui-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.5; margin-bottom: var(--space-1); color: #4E008E; }
+    .P-400-SG { font-size: var(--ui-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.5; margin-bottom: var(--space-1); color: #808080; }
+
+    /* ── NAV GRADIENT OVERLAY ── */
+    .nav-bg-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 15vh;
+      background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ── TOP NAV ── */
+    .top-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 4.5rem 2rem 1.5rem;
+      transition: padding-top 300ms cubic-bezier(.62,.61,.02,1);
+    }
+    .top-nav.nav-compact {
+      padding-top: 1.25rem;
+    }
+    .top-nav-inner {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4375rem;
+      font-size: var(--p-size);
+      font-weight: 400;
+      letter-spacing: 0em;
+      line-height: 1.75;
+    }
+    /* slot container: clips overflow, width animates from 0 */
+    .tn-slot {
+      position: relative;
+      height: 1em;
+      overflow: hidden;
+      width: 0px;
+      transition: width 700ms var(--ease-fast);
+      line-height: 1;
+    }
+    /* invisible ghost — used only for width measurement */
+    .tn-ghost {
+      position: absolute;
+      visibility: hidden;
+      white-space: nowrap;
+      pointer-events: none;
+      top: 0; left: 0;
+    }
+    /* the visible text layer — enters from below */
+    .tn-text {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 1em;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      transform: translateY(110%);
+      transition: transform 700ms var(--ease-fast);
+    }
+    .tn-slot.entered .tn-text { transform: translateY(0%); }
+
+    /* content styles */
+    .tn-home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #808080;
+      text-decoration: none;
+      transition: color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .tn-home-link:hover { color: #1c1c1e; }
+    .tn-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #4E008E;
+      flex-shrink: 0;
+    }
+    .tn-chev { color: #808080; padding: 0 var(--space-2); }
+    .tn-page-title { color: #1c1c1e; font-weight: 400; display: inline-flex; align-items: center; }
+
+    /* ── LAYOUT ── */
+    .layout { padding-top: 0; }
+
+    /* ── SIDEBAR ── */
+    .case-sidebar {
+      position: fixed;
+      left: 0; top: 0;
+      height: 100%;
+      width: 140px;
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+      padding-top: 40px;
+      padding-left: 24px;
+    }
+    @media (min-width: 1024px) { .case-sidebar { display: flex; } }
+    .sidebar-home {
+      font-size: var(--p-size);
+      font-family: var(--font);
+      font-weight: 400;
+      letter-spacing: 0em;
+      line-height: 1.75;
+      margin-bottom: 32px;
+      color: #808080;
+      text-decoration: none;
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity 500ms cubic-bezier(.16,1,.3,1), transform 500ms cubic-bezier(.16,1,.3,1), color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .sidebar-home.visible { opacity: 1; transform: none; }
+    .sidebar-home.hiding {
+      transition: opacity 280ms cubic-bezier(.4,0,1,1), transform 280ms cubic-bezier(.4,0,1,1), color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .sidebar-home:hover { color: #1c1c1e; }
+    .sidebar-nav { display: flex; flex-direction: column; }
+    .nav-link {
+      text-align: left;
+      font-size: var(--p-size);
+      font-family: var(--font);
+      letter-spacing: 0em;
+      line-height: 1.75;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: #808080;
+      font-weight: 400;
+      margin-bottom: 0rem;
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity 500ms cubic-bezier(.16,1,.3,1), transform 500ms cubic-bezier(.16,1,.3,1), color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .nav-link.visible { opacity: 1; transform: none; }
+    .nav-link.hiding {
+      transition: opacity 280ms cubic-bezier(.4,0,1,1), transform 280ms cubic-bezier(.4,0,1,1), color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .nav-link.active { color: #4E008E; }
+    .nav-link:hover { color: #1c1c1e; }
+    .nav-link:focus-visible { outline: none; }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      width: 100%;
+      padding: var(--space-9) clamp(16px, 4vw, 48px) 160px;
+      display: flex;
+      justify-content: center;
+    }
+    .main-inner { width: 100%; max-width: 75%; padding: 0 clamp(16px, 4vw, 48px); margin: 0 auto; }
+    @media (min-width: 1280px) { .main-inner { max-width: 75%; } }
+    @media (min-width: 1600px) { .main-inner { max-width: 75%; } }
+
+    /* ── INTRO BOTTOM SPACING ── */
+    #hero { margin-bottom: var(--space-8); }
+
+    /* ── INTRO ── */
+
+    .intro-dark {
+      margin-bottom: var(--space-1);
+    }
+
+    /* .intro-dark-logo → replaced by .H3-500 */
+
+    .intro-dark-desc {
+      margin-bottom: var(--space-4);
+      max-width: 460px;
+    }
+    @media (min-width: 1280px) { .intro-dark-desc { max-width: 600px; } }
+    @media (min-width: 1600px) { .intro-dark-desc { max-width: 600px; } }
+
+    .intro-dark-desc p { margin-bottom: var(--space-1); }
+    .intro-dark-desc p:last-child { margin-bottom: 0; }
+
+    .intro-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+      padding-top: 0;
+    }
+
+    /* .intro-meta-label → replaced by .H3-500 */
+
+
+    /* ── GMAIL SCAN AREA ── */
+    /* Outer F8F8F8 box locked to 960×680, scales proportionally on smaller viewports.
+       Safari frame inside is sized by the video's native aspect (1366×1084 + header),
+       centered with natural whitespace around it. */
+    .gmail-scan {
+      background: #F8F8F8;
+      border-radius: 0;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 960 / 680;
+      margin: 0 auto var(--space-1);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      container-type: size;
+    }
+
+    /* Safari frame — height-bound to fit inside .gmail-scan,
+       width follows from aspect-ratio (video 1366×1084 + header).
+       Total aspect ≈ 1366 : 1141 (header is 4.2% of width). */
+    .safari-frame {
+      height: 90cqh;
+      width: auto;
+      aspect-ratio: 1366 / 1141;
+      max-width: 90cqw;
+      border-radius: 1.25cqw;
+      overflow: hidden;
+      border: 1px solid #e2e2e2;
+      box-shadow: 0 1px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      container-type: inline-size;
+    }
+
+    /* Chrome bar — sizes in cqw of the Safari frame (not the outer box),
+       so header scales together with the frame. */
+    .safari-chrome {
+      background: #f6f6f6;
+      padding: 0.6cqw 2.08cqw;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #e8e8e8;
+      flex-shrink: 0;
+    }
+    .safari-lights { display: flex; gap: 0.83cqw; flex-shrink: 0; }
+    .safari-lights span {
+      display: block;
+      width: 1.25cqw;
+      height: 1.25cqw;
+      border-radius: 50%;
+      background: #c5c5c7;
+    }
+    .safari-url-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 0 5.83cqw;
+    }
+    .safari-url {
+      background: #ebebeb;
+      border-radius: 0.83cqw;
+      padding: 0.52cqw 1.46cqw;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.52cqw;
+      font-size: 1.25cqw;
+      color: #6b6b6b;
+      font-family: var(--font);
+      letter-spacing: -.01em;
+      white-space: nowrap;
+      max-width: 33.33cqw;
+      width: 100%;
+      justify-content: center;
+    }
+    .safari-url svg {
+      width: 0.94cqw;
+      height: 1.15cqw;
+      flex-shrink: 0;
+    }
+
+    /* Video area — fills the rest of the Safari frame. object-fit:cover
+       is fine because the frame's aspect already matches the video's. */
+    .safari-video-wrap {
+      background: #fff;
+      line-height: 0;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .safari-video-wrap video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+
+    /* ── VIDEO PLAY/PAUSE BUTTON ── */
+    .video-play-btn {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(120,120,120,0.45);
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      transition: background 180ms ease, border-color 180ms ease, transform 120ms ease;
+      padding: 0;
+      outline: none;
+    }
+    .video-play-btn:hover {
+      background: rgba(255,255,255,0.96);
+      border-color: rgba(80,80,80,0.55);
+    }
+    .video-play-btn:active { transform: scale(0.92); }
+    .video-play-btn svg { display: block; }
+
+    /* ── INTRO TWO IMAGE CARDS ── */
+    .intro-img-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-1);
+      margin-bottom: var(--space-6);
+    }
+    .intro-img-grid .img-block img {
+      width: 100%;
+    }
+
+    /* ── SECTION BLOCK ── */
+    .section-block {
+      margin-bottom: var(--space-8);
+      scroll-margin-top: 120px;
+    }
+    /* Pill badge */
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 16px;
+      border-radius: 999px;
+      background: rgba(92,6,140,.07);
+      border: 1px solid rgba(92,6,140,.18);
+      margin-bottom: var(--space-1);
+    }
+    .section-tag::before {
+      display: none;
+    }
+    .H2-600 {
+      font-size: var(--h2-size);
+      font-weight: 600;
+      letter-spacing: -0.0022em;
+      line-height: 1.20;
+      margin-bottom: var(--space-3);
+      color: #1c1c1e;
+    }
+    /* .stat-label, .cta-title, .reflection-heading → replaced by .H3-600 */
+    .reflection-list { padding-left: 18px; list-style: disc; }
+    .section-body p { margin-bottom: 0; }
+    .section-body p:last-child { margin-bottom: 0; }
+    .section-body strong { color: var(--fg); font-weight: 600; }
+
+    /* ── TWO-COL ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+    /* Image bottom-alignment: when a column has text followed by an image,
+       auto margin pushes the image down so both columns' images bottom-align */
+    .two-col > div {
+      display: flex;
+      flex-direction: column;
+    }
+    .two-col > div .img-block:last-child:not(:first-child),
+    .two-col > div [class~="img-block"]:last-child:not(:first-child) {
+      margin-top: auto !important;
+    }
+
+    /* ── IMAGE BLOCK ── */
+    .img-block {
+      width: 100%;
+      border-radius: 0;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .img-block.dark { background: #0f0f0f; }
+    .img-block img { width: 100%; display: block; }
+    .img-block video { width: 100%; height: auto; display: block; }
+
+
+    /* ── FEATURE IMAGES STACK ── */
+    .img-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      margin-top: var(--space-2);
+    }
+
+    /* ── CTA ── */
+    .cta-block {
+      background: var(--purple-light);
+      border-radius: 18px;
+      padding: 44px 40px;
+      text-align: center;
+      border: 1px solid var(--purple-border);
+      margin-top: var(--space-7);
+    }
+
+    /* ── NEXT PROJECT CARD ── */
+    .next-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: #FFFFFF;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+      transition: box-shadow 0.35s cubic-bezier(.22,.68,0,1.2), transform 0.35s cubic-bezier(.22,.68,0,1.2);
+    }
+    .next-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.12), 0 6px 20px rgba(0,0,0,0.07);
+    }
+    .next-card-inner {
+      display: grid;
+      grid-template-columns: 58fr 42fr;
+      height: 340px;
+    }
+    .next-card-img {
+      overflow: hidden;
+      background: #e8eaeb;
+    }
+    .next-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(.22,.68,0,1.2);
+    }
+    .next-card:hover .next-card-img img { transform: scale(1.04); }
+    .next-card-meta {
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-left: 1px solid #e8eaeb;
+      background: #FFFFFF;
+    }
+    .next-card-logo { align-self: flex-start; }
+    .next-card-logo img { height: 24px; width: auto; object-fit: contain; }
+    .next-card-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding-top: var(--space-4);
+    }
+    .next-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: var(--space-1);
+    }
+    .next-card-tags .P-400-P {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 16px;
+      border-radius: 999px;
+      background: rgba(92,6,140,0.07);
+      border: 1px solid rgba(92,6,140,0.18);
+      margin-bottom: 0;
+    }
+    .next-card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #4E008E;
+      background: #FFFFFF;
+      border: 1px solid #4E008E;
+      padding: 8px 20px;
+      border-radius: 9999px;
+      font-size: var(--ui-size);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      align-self: flex-start;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+    .next-card:hover .next-card-cta { background: #4E008E; color: #FFFFEB; }
+    .next-card-arrow {
+      display: inline-block;
+      font-style: normal;
+      transition: transform 0.25s ease;
+    }
+    .next-card:hover .next-card-arrow { transform: translate(3px, -3px); }
+
+    @media (max-width: 768px) {
+      .next-card-inner { grid-template-columns: 1fr; height: auto; }
+      .next-card-img { height: 260px; }
+      .next-card-meta { border-left: none; border-top: 1px solid #e8eaeb; padding: 28px 24px; }
+    }
+
+    /* ── GRAIN ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ── CAROUSEL ── */
+    .carousel-wrap {
+      margin: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .carousel-track {
+      display: flex;
+      gap: 16px;
+      transition: transform .45s cubic-bezier(.16,1,.3,1);
+      will-change: transform;
+    }
+    .carousel-slide {
+      flex-shrink: 0;
+      background: #f8f8f8;
+    }
+    .carousel-slide img {
+      width: 100%;
+      display: block;
+    }
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      margin-top: var(--space-2);
+    }
+    .carousel-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, transform .2s cubic-bezier(.16,1,.3,1), width .2s;
+      padding: 0;
+      outline: none;
+    }
+    .carousel-dot.active {
+      background: #4E008E;
+      border-color: #4E008E;
+      transform: scale(1.25);
+      width: 20px;
+      border-radius: 4px;
+    }
+    .carousel-dot:focus-visible {
+      outline: 2px solid var(--purple);
+      outline-offset: 2px;
+    }
+
+    /* ── FEATURE CARDS (old — kept for Challenge section) ── */
+    .feat-cards-grid {
+      margin-top: var(--space-4);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+    .feat-card {
+      background: #f8f8f8;
+      border-radius: 16px;
+      padding: 32px 24px;
+      align-items: flex-start;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.16,1,.3,1);
+      text-decoration: none;
+      color: inherit;
+    }
+    .feat-card:hover { transform: scale(0.98); background: #F1eBf6; }
+    .feat-icon-wrap { margin-bottom: var(--space-2); display: flex; justify-content: center; width: 100%; }
+    /* .feat-title → replaced by .H3-600 */
+
+    /* ── BENTO GRID (Solution section) ── */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+    .bento-narrow { grid-column: span 1; }
+    .bento-wide   { grid-column: span 1; }
+    .bento-full   { grid-column: 1 / -1; }
+
+    /* Explicit placement: Card 1 full-width top, Cards 2+3 side by side below */
+    .bento-grid > .bento-card:nth-child(1) { grid-column: 1 / -1; grid-row: 1; }
+    .bento-grid > .bento-card:nth-child(2) { grid-column: 1; grid-row: 2; }
+    .bento-grid > .bento-card:nth-child(3) { grid-column: 2; grid-row: 2; }
+
+    .bento-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f8f8f8;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: transform .25s cubic-bezier(.16,1,.3,1), background .2s;
+      min-height: 280px;
+    }
+    .bento-card:hover { transform: scale(0.98); background: #f1ebf6; }
+    .bento-card:focus-visible { outline: 2px solid var(--purple); outline-offset: -2px; }
+
+    .bento-bg {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 180px;
+      mask-image: linear-gradient(to bottom, #000 50%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent 100%);
+    }
+    .bento-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      transition: transform .35s cubic-bezier(.16,1,.3,1);
+    }
+    .bento-card:hover .bento-bg img { transform: scale(1.04); }
+
+    .bento-bg-blank {
+      background: linear-gradient(145deg, rgba(92,6,140,.05) 0%, rgba(92,6,140,.02) 100%);
+      min-height: 180px;
+    }
+
+    .bento-footer {
+      padding: var(--space-2) var(--space-2) var(--space-2);
+    }
+    .bento-footer-icon { margin-bottom: var(--space-1); }
+    /* .bento-footer-title → replaced by .H3-600 */
+    .bento-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .2s, transform .2s cubic-bezier(.16,1,.3,1);
+    }
+    .bento-card:hover .bento-cta { opacity: 1; transform: translateY(0); }
+
+    @media (min-width: 835px) {
+      #bento-card-1 .bento-bg { max-height: 600px; display: flex; align-items: center; justify-content: center; }
+      #bento-card-1 .bento-bg img { width: 50%; height: auto; object-fit: contain; }
+    }
+
+    @media (max-width: 834px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-narrow, .bento-wide, .bento-full { grid-column: span 1; }
+      .bento-grid > .bento-card:nth-child(1) { grid-column: 1; grid-row: auto; }
+      .bento-grid > .bento-card:nth-child(2),
+      .bento-grid > .bento-card:nth-child(3) { grid-column: 1; grid-row: auto; }
+    }
+    @keyframes badge-shake {
+      0%   { transform: scale(1) rotate(0deg); }
+      20%  { transform: scale(1.1) rotate(-3deg); }
+      40%  { transform: scale(1.1) rotate(3deg); }
+      60%  { transform: scale(1.1) rotate(-2deg); }
+      80%  { transform: scale(1.1) rotate(2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* ── NEW CLAIMS FEAT CARD ANIMATIONS ── */
+
+    /* Card 1: receipt scan lines — start visible */
+    .receipt-line {
+      stroke-dasharray: 12;
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+
+    /* Card 2: checkmark — start visible */
+    #policy-check {
+      stroke-dasharray: 10;
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+
+    /* Card 3: cursor hop */
+    @keyframes cursor-hop {
+      0%   { transform: translate(0, 0); }
+      30%  { transform: translate(0, -4px); }
+      55%  { transform: translate(-3px, 0); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* ── AI TOOLS ORBIT ── */
+    @keyframes ai-orbit-i1 { from { transform: rotate(0deg)   translateX(90px)  rotate(0deg);    } to { transform: rotate(360deg)  translateX(90px)  rotate(-360deg);  } }
+    @keyframes ai-orbit-i2 { from { transform: rotate(120deg) translateX(90px)  rotate(-120deg); } to { transform: rotate(480deg)  translateX(90px)  rotate(-480deg);  } }
+    @keyframes ai-orbit-i3 { from { transform: rotate(240deg) translateX(90px)  rotate(-240deg); } to { transform: rotate(600deg)  translateX(90px)  rotate(-600deg);  } }
+    @keyframes ai-orbit-o1 { from { transform: rotate(60deg)  translateX(150px) rotate(-60deg);  } to { transform: rotate(420deg)  translateX(150px) rotate(-420deg);  } }
+    @keyframes ai-orbit-o2 { from { transform: rotate(180deg) translateX(150px) rotate(-180deg); } to { transform: rotate(540deg)  translateX(150px) rotate(-540deg);  } }
+    @keyframes ai-orbit-o3 { from { transform: rotate(300deg) translateX(150px) rotate(-300deg); } to { transform: rotate(660deg)  translateX(150px) rotate(-660deg);  } }
+
+    .ai-tools-orbit {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+    }
+    .ai-orbit-bubble {
+      width: 44px; height: 44px;
+      margin: -22px 0 0 -22px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.05);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .ai-orbit-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px dashed rgba(0,0,0,0.1);
+      pointer-events: none;
+    }
+
+    /* ── FEATURE 1 VIDEO AREA ── */
+    /* Outer box: fixed 960×700, scales proportionally like .gmail-scan */
+    .feat1-scan {
+      background: #F8F8F8;
+      border-radius: 0;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 960 / 700;
+      margin: 0 auto var(--space-1);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      container-type: size;
+    }
+
+    /* Safari frame sized to 1994×1582 video (header ≈ 4.2% of width → total height 1666) */
+    .feat1-safari {
+      height: 90cqh;
+      width: auto;
+      aspect-ratio: 1994 / 1666;
+      max-width: 90cqw;
+      border-radius: 1.25cqw;
+      overflow: hidden;
+      border: 1px solid #e2e2e2;
+      box-shadow: 0 1px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      container-type: inline-size;
+    }
+
+    /* Safari frame sized to 2072×1576 video (header ≈ 4.2% of width → total height 1663) */
+    .feat2-safari {
+      height: 90cqh;
+      width: auto;
+      aspect-ratio: 2072 / 1663;
+      max-width: 90cqw;
+      border-radius: 1.25cqw;
+      overflow: hidden;
+      border: 1px solid #e2e2e2;
+      box-shadow: 0 1px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      container-type: inline-size;
+    }
+
+    /* ── 3 MODES VIDEO AREA ── */
+    /* Outer box: fixed 472×390, scales proportionally */
+    .modes-scan {
+      background: #F8F8F8;
+      border-radius: 0;
+      width: 100%;
+      max-width: 472px;
+      aspect-ratio: 472 / 390;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      container-type: size;
+    }
+
+    /* ── REFLECTION VIDEO AREA ── */
+    /* Outer box: full-width, 960×700 aspect, scales like .feat1-scan */
+    .refl-scan {
+      background: #F8F8F8;
+      border-radius: 0;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 960 / 700;
+      margin: 0 auto var(--space-1);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      container-type: size;
+    }
+
+    /* Safari frame sized to 1990×1576 video (header ≈ 4.2% of width → total height 1660) */
+    .refl-safari {
+      height: 90cqh;
+      width: auto;
+      aspect-ratio: 1990 / 1660;
+      max-width: 90cqw;
+      border-radius: 1.25cqw;
+      overflow: hidden;
+      border: 1px solid #e2e2e2;
+      box-shadow: 0 1px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      container-type: inline-size;
+    }
+
+    /* Safari frame — video 1606×1488, header ≈ 4.2% of width → total height 1555 */
+    .modes-safari {
+      height: 90cqh;
+      width: auto;
+      aspect-ratio: 1606 / 1555;
+      max-width: 90cqw;
+      border-radius: 1.25cqw;
+      overflow: hidden;
+      border: 1px solid #e2e2e2;
+      box-shadow: 0 1px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      container-type: inline-size;
+    }
+
+    /* ── OUTCOMES GRID ── */
+    .outcomes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+
+    /* ── REFLECTION FLEX ── */
+    .reflection-flex {
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      margin-bottom: var(--space-7);
+      min-height: 320px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #ffffff;
+    }
+    .reflection-text { flex: 1; padding: 40px 48px; z-index: 1; min-width: 0; }
+    .reflection-orbit { flex: 1; position: relative; height: 320px; overflow: hidden; }
+
+    /* ── RESPONSIVE ── */
+    /* Tablet — 834px */
+    @media (max-width: 834px) {
+      .layout { padding-top: 0; padding-left: 0; }
+      .main { padding: var(--space-9) var(--space-2) 100px; }
+      .section-block { margin-bottom: var(--space-7); }
+      .two-col { grid-template-columns: 1fr; gap: var(--space-7); }
+      .intro-meta-grid { grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+      .intro-img-grid { grid-template-columns: 1fr; }
+      .feat-cards-grid { grid-template-columns: 1fr; }
+      .outcomes-grid { grid-template-columns: 1fr 1fr; }
+      .reflection-flex { flex-direction: column; min-height: auto; }
+      .reflection-text { padding: 32px 24px; }
+      .reflection-orbit { width: 100%; height: 240px; flex: none; }
+    }
+    /* Mobile — 480px */
+    @media (max-width: 480px) {
+      .main { padding-top: var(--space-9); padding-bottom: var(--space-7); }
+      .main-inner { max-width: 100%; }
+      .intro-meta-grid { grid-template-columns: 1fr; gap: var(--space-1); }
+      .outcomes-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav-bg-overlay" aria-hidden="true"></div>
+<nav class="top-nav" id="top-nav" aria-label="Breadcrumb navigation">
+  <div class="top-nav-inner">
+
+    <!-- Slot 1: Todd Wu home link -->
+    <div class="tn-slot" id="tn-slot-1" style="transition-delay: 100ms;">
+      <div class="tn-ghost">
+        Todd Wu<span style="color:#808080;padding:0 var(--space-2);">›</span>
+      </div>
+      <div class="tn-text" style="transition-delay: 0ms;">
+        <a href="index.html?skip=1" class="tn-home-link">
+          Todd Wu<span class="tn-chev">›</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Slot 2: Forma AI Claim page title -->
+    <div class="tn-slot" id="tn-slot-2" style="transition-delay: 200ms;">
+      <div class="tn-ghost">
+        <span style="display:inline-flex;align-items:center;gap:var(--space-1);"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4E008E;flex-shrink:0;"></span>Forma AI Claim</span>
+      </div>
+      <div class="tn-text" style="transition-delay: 100ms;">
+        <span class="tn-home-link" style="color:#1c1c1e;cursor:default;gap:var(--space-1);">
+          <span class="tn-dot"></span>Forma AI Claim
+        </span>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="case-sidebar" id="sidebar">
+    <a href="index.html?skip=1" class="sidebar-home">Home</a>
+    <nav class="sidebar-nav" aria-label="Section navigation">
+      <button class="nav-link" data-target="hero">Intro</button>
+      <button class="nav-link" data-target="challenge">Challenge</button>
+      <button class="nav-link" data-target="solution">Solution</button>
+      <button class="nav-link" data-target="feature-1">Feature 1</button>
+      <button class="nav-link" data-target="feature-2">Feature 2</button>
+      <button class="nav-link" data-target="feature-3">Feature 3</button>
+      <button class="nav-link" data-target="outcomes">Outcomes</button>
+      <button class="nav-link" data-target="reflection-ai">Reflection X AI</button>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+  <div class="main-inner case-x-gutter">
+
+    <!-- ── INTRO ── -->
+    <div id="hero" style="scroll-margin-top:120px;">
+
+      <p class="P-400-SP section-tag">Intro</p>
+      <h1 class="H1-700">AI-powered solution for benefit claims</h1>
+
+      <!-- Info block (no dark background) -->
+      <div class="intro-dark">
+        <h3 class="H3-500">Forma</h3>
+        <div class="P-400-B intro-dark-desc">
+          <p class="P-400-B">Forma is the leading life benefits platform, providing flexible and personalized benefits to a global workforce of nearly 1 million members.</p>
+          <p class="P-400-B">My team redefined the benefits claims process by creating an intelligent, automated, user-centric platform that simplifies complexity and enhances efficiency.</p>
+        </div>
+
+        <div class="intro-meta-grid">
+          <div>
+            <h3 class="H3-500">Team</h3>
+            <p class="P-400-B">1 Designer (Me)<br>1 Product Manager<br>6 Developers</p>
+          </div>
+          <div>
+            <h3 class="H3-500">Role</h3>
+            <p class="P-400-B">Product Designer<br>Led end-to-end design</p>
+          </div>
+          <div>
+            <h3 class="H3-500">Process</h3>
+            <p class="P-400-B">AI tools<br>Stakeholder interviews<br>Data analysis<br>Prototypes<br>User testing</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Intro video — Safari frame (960×700 outer box, 1994×1582 video) -->
+      <div id="intro-video" class="feat1-scan" style="margin-top: var(--space-4);">
+        <div class="feat1-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                client.joinforma.com
+              </div>
+            </div>
+          </div>
+          <!-- Video content -->
+          <div class="safari-video-wrap">
+            <video autoplay loop muted playsinline>
+              <source src="AI Claim Vids/AI Claim vid - Feature.mov" type="video/quicktime">
+              <source src="AI Claim Vids/AI Claim vid - Feature.mov" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two image cards (no labels) -->
+      <div class="intro-img-grid">
+        <div class="img-block">
+          <img src="AI%20Claim%20pics/03%20New2%20In-product%20reminders%20pic.png"
+               alt="In-product reminders — dashboard with pending tasks and expiring benefit alert">
+        </div>
+        <div class="img-block">
+          <img src="AI%20Claim%20pics/04%20New%202%20Benefit%20filter%20pic.png"
+               alt="Benefit filter in the store">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── CHALLENGE ── -->
+    <div class="section-block" id="challenge">
+      <p class="P-400-SP section-tag">Challenge</p>
+      <h1 class="H1-700">When claiming becomes a chore</h1>
+      <div class="P-400-G section-body">
+        <p class="P-400-G">Users struggled with unclear benefit eligibility, and time-consuming manual claiming processes.</p>
+      </div>
+
+      <div class="feat-cards-grid" style="margin-top: var(--space-4);">
+
+        <div style="background:#f8f8f8; border-radius:16px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div style="margin-bottom:var(--space-2); display:flex; justify-content:center;">
+            <img src="Icons/User%20Q􀯩.png" alt="" style="width:40px; height:40px; object-fit:contain;">
+          </div>
+          <p class="P-400-G-List" style="color:#1c1c1e; margin-bottom:0;">Users didn't know what benefits they could use or when they expired</p>
+        </div>
+
+        <div style="background:#f8f8f8; border-radius:16px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div style="margin-bottom:var(--space-2); display:flex; justify-content:center;">
+            <img src="Icons/Time􀐬.png" alt="" style="width:40px; height:40px; object-fit:contain;">
+          </div>
+          <p class="P-400-G-List" style="color:#1c1c1e; margin-bottom:0;">Claims took too long due to manual and recurring submissions</p>
+        </div>
+
+        <div style="background:#f8f8f8; border-radius:16px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div style="margin-bottom:var(--space-2); display:flex; justify-content:center;">
+            <img src="Icons/Search􀒓.png" alt="" style="width:40px; height:40px; object-fit:contain;">
+          </div>
+          <p class="P-400-G-List" style="color:#1c1c1e; margin-bottom:0;">It was hard to find eligible items in the Forma Store</p>
+        </div>
+
+      </div>
+
+      <div class="two-col" style="margin-top: var(--space-7);">
+        <div>
+          <p class="P-400-SG">User Problem</p>
+          <h2 class="H2-600">Benefits went unclaimed</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Users frequently left their benefits unclaimed due to a high-friction, time-consuming process.</p>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/01%20User%20Problem%20pic.png" alt="User problem — unclaimed benefits visualization">
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Business Problem</p>
+          <h2 class="H2-600">Support inquiries increased</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">The complexity of the manual process led to a surge in support inquiries, straining operational resources.</p>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/02%20Business%20Problem%20pic.png" alt="Business problem — support volume vs capacity chart">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SOLUTION ── -->
+    <div class="section-block" id="solution">
+      <p class="P-400-SP section-tag">Solution</p>
+      <h1 class="H1-700">How might we help users claim on time and shorten claim time for a better user experience?</h1>
+      <div class="P-400-G section-body">
+        <p class="P-400-G">We implemented 3 features for this challenge</p>
+      </div>
+      <div class="bento-grid">
+
+        <!-- Card 1: Automated claims — full width, blank image -->
+        <a id="bento-card-1" class="bento-card bento-full" href="#feature-1">
+          <div class="bento-bg" style="background:#f8f8f8;">
+            <img src="AI%20Claim%20pics/25%20Automated%20Claims.png" alt="Automated Claims">
+          </div>
+          <div class="bento-footer">
+            <div class="bento-footer-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path id="bento-sparkle-main" d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                <path class="bento-sparkle-star" d="M20 3v4"/><path class="bento-sparkle-star" d="M22 5h-4"/><path class="bento-sparkle-star" d="M4 17v2"/><path class="bento-sparkle-star" d="M5 18H3"/>
+              </svg>
+            </div>
+            <h3 class="H3-600">Automated claims</h3>
+            <p class="P-400-G">Implemented automated claims to reduce manual input and recurring work</p>
+            <span class="P-400-SP bento-cta">View feature 1 →</span>
+          </div>
+        </a>
+
+        <!-- Card 2: Claim notifications — wide, with image -->
+        <a id="bento-card-2" class="bento-card bento-wide" href="#feature-2">
+          <div class="bento-bg">
+            <img src="AI%20Claim%20pics/24%20In-product%20reminders%20pic.png" alt="In-product reminders">
+          </div>
+          <div class="bento-footer">
+            <div class="bento-footer-icon">
+              <svg id="bento-badge-svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
+                <line x1="12" x2="12" y1="8" y2="12"/>
+                <line x1="12" x2="12.01" y1="16" y2="16"/>
+              </svg>
+            </div>
+            <h3 class="H3-600">Claim notifications</h3>
+            <p class="P-400-G">Introduced claim notifications to prevent users from missing their benefits</p>
+            <span class="P-400-SP bento-cta">View feature 2 →</span>
+          </div>
+        </a>
+
+        <!-- Card 3: Benefit filter — half width, mirrors Claim notifications -->
+        <a id="bento-card-3" class="bento-card bento-wide" href="#feature-3">
+          <div class="bento-bg">
+            <img src="AI%20Claim%20pics/12%20New3%20Forma%20Store%20pic.png" alt="New Forma Store with benefit filter">
+          </div>
+          <div class="bento-footer">
+            <div class="bento-footer-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line id="bento-sl1" x1="21" y1="4" x2="14" y2="4"/>
+                <line id="bento-sl2" x1="10" y1="4" x2="3" y2="4"/>
+                <line id="bento-sl3" x1="21" y1="12" x2="12" y2="12"/>
+                <line id="bento-sl4" x1="8" y1="12" x2="3" y2="12"/>
+                <line id="bento-sl5" x1="3" y1="20" x2="12" y2="20"/>
+                <line id="bento-sl6" x1="16" y1="20" x2="21" y2="20"/>
+                <line id="bento-sl7" x1="14" y1="2" x2="14" y2="6"/>
+                <line id="bento-sl8" x1="8" y1="10" x2="8" y2="14"/>
+                <line id="bento-sl9" x1="16" y1="18" x2="16" y2="22"/>
+              </svg>
+            </div>
+            <h3 class="H3-600">Benefit filter</h3>
+            <p class="P-400-G">Added filters to the Forma Store to help people discover unused benefits</p>
+            <span class="P-400-SP bento-cta">View feature 3 →</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ── FEATURE 1 ── -->
+    <div class="section-block" id="feature-1">
+      <p class="P-400-SP section-tag">Feature 1</p>
+      <h1 class="H1-700">Automated one-time and recurring claims.</h1>
+      <div class="P-400-G section-body" style="margin-bottom: var(--space-4);">
+        <p class="P-400-G">Reduced manual entry with smarter pre-fill claim flows</p>
+      </div>
+
+      <!-- Feature 1 video — Safari frame (960×700 outer box, 1994×1582 video) -->
+      <div class="feat1-scan" style="margin-bottom: var(--space-7);">
+        <div class="feat1-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                client.joinforma.com
+              </div>
+            </div>
+          </div>
+          <!-- Video content -->
+          <div class="safari-video-wrap">
+            <video autoplay loop muted playsinline>
+              <source src="AI Claim Vids/AI Claim vid - Feature.mov" type="video/quicktime">
+              <source src="AI Claim Vids/AI Claim vid - Feature.mov" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Previous vs New flow — text + image -->
+      <div class="two-col" style="margin-top: 0;">
+        <div>
+          <p class="P-400-SG">Previous</p>
+          <h2 class="H2-600">The pain of manual claims</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Pick a benefit category</li>
+              <li class="P-400-G-List">Fill in all the fields</li>
+              <li class="P-400-G-List">Upload the receipt</li>
+            </ol>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/05%20new%202%20Previous%20pic.png" alt="Previous claim submission form">
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">New flow</p>
+          <h2 class="H2-600">Introduced three clear modes</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ul style="padding-left: 18px; list-style: disc;">
+              <li class="P-400-G-List">Upload</li>
+              <li class="P-400-G-List">Manual</li>
+              <li class="P-400-G-List">Subscription</li>
+            </ul>
+          </div>
+          <div class="img-block" style="background: #f8f8f8; aspect-ratio: 476 / 390.63; position: relative; overflow: hidden;">
+            <video autoplay loop muted playsinline style="position: absolute; top: 48px; bottom: 0; left: 50%; transform: translateX(-50%); height: calc(100% - 48px); width: auto; box-shadow: var(--shadow-card); border-radius: 16px 16px 0 0;">
+              <source src="AI Claim Vids/3 modes new.mov" type="video/quicktime">
+              <source src="AI Claim Vids/3 modes new.mov" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload mode vs Subscription mode — text + image -->
+      <div class="two-col" style="margin-top: var(--space-7);">
+        <div>
+          <p class="P-400-SG">Upload mode</p>
+          <h2 class="H2-600">AI receipt reader</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Pick a benefit category</li>
+              <li class="P-400-G-List">Simply upload a receipt</li>
+              <li class="P-400-G-List">System extras data</li>
+            </ol>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/23%20new2%20AI%20Scan.png" alt="AI receipt scan — auto-extracted fields from uploaded receipt">
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Subscription mode</p>
+          <h2 class="H2-600">System handles repeated processing</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Define service duration</li>
+              <li class="P-400-G-List">Users can set up a repeating pattern instead of resubmit the same claim every cycle</li>
+            </ol>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/06%20new%20Services%20duration%20pic.png" alt="Service start and end date fields for recurring claims">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FEATURE 2 ── -->
+    <div class="section-block" id="feature-2">
+      <p class="P-400-SP section-tag">Feature 2</p>
+      <h1 class="H1-700">Introduced claim notifications</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">This implementation ensured users won't miss out the claim periods</p>
+      </div>
+
+      <!-- Feature 2 video — Safari frame -->
+      <div class="feat1-scan" style="margin-bottom: var(--space-7);">
+        <div class="feat2-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                client.joinforma.com
+              </div>
+            </div>
+          </div>
+          <!-- Video content -->
+          <div class="safari-video-wrap">
+            <video autoplay loop muted playsinline>
+              <source src="AI Claim Vids/Introduced claim notifications vid 2.mov" type="video/quicktime">
+              <source src="AI Claim Vids/Introduced claim notifications vid 2.mov" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification emails -->
+      <div style="margin-bottom:var(--space-7);">
+        <h2 class="H2-600">Notification emails</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">Partnered with cross functional team to implement an email notification feature</p>
+        </div>
+        <div class="img-block">
+          <img src="AI%20Claim%20pics/07%20New%20Email%20pic.png" alt="Email notification — expiring benefits reminder with claim CTA">
+        </div>
+      </div>
+
+      <!-- Task reminder -->
+      <div style="margin-bottom:var(--space-7);">
+        <h2 class="H2-600">Task reminder</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">Reinforcing urgency and gives users a clear sense of what to do next</p>
+          <p class="P-400-G">Collaborate with content designer on copy, version by version</p>
+        </div>
+        <div class="img-block">
+          <img src="AI%20Claim%20pics/08%20new%20Task%20reminder%20pic.png" alt="Task reminder — in-product dashboard with expiring benefit tasks">
+        </div>
+      </div>
+
+      <!-- Expiring alerts + Expiration banner -->
+      <div class="two-col" style="margin-top:0;">
+        <div>
+          <h2 class="H2-600">Expiring alerts</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Showing users the claim periods of each individual benefit</p>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/09%20New%20Expiring%20alert%20pic.png" alt="Expiring alert — benefit card with use-by date">
+          </div>
+        </div>
+        <div>
+          <h2 class="H2-600">Expiration banner</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Actionable reminders to shorten the path from awareness to submission</p>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/10%20New2%20Expiration%20banner%20pic.png" alt="Expiration banner — in-app alert bar with claim CTA">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FEATURE 3 ── -->
+    <div class="section-block" id="feature-3">
+      <p class="P-400-SP section-tag">Feature 3</p>
+      <h1 class="H1-700">Added benefit filters to the Forma Store</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">Helps people discover unused benefits</p>
+      </div>
+
+      <!-- Forma store vid — iPhone mockup (full-bleed background) -->
+      <div style="background:#F8F8F8; max-width:100%; aspect-ratio:960/700; container-type:size; margin-bottom:var(--space-7); display:flex; align-items:center; justify-content:center;">
+        <!-- cqw sizing container — height 90cqh so padding matches feat1-scan -->
+        <div style="height:90cqh; aspect-ratio:784/1680; container-type:size; display:flex; align-items:center; justify-content:center;">
+          <!-- iPhone device shell — light gray flat style -->
+          <div style="position:relative; width:84cqw; aspect-ratio:784/1680; background:#E4E4E4; border-radius:12cqw; box-shadow:0 0 0 1.5px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);">
+            <!-- Screen area -->
+            <div style="position:absolute; inset:3px; border-radius:calc(12cqw - 3px); overflow:hidden; background:#E4E4E4;">
+              <!-- Dynamic Island pill -->
+              <div style="position:absolute; top:3.2%; left:50%; transform:translateX(-50%); width:31%; height:3.8%; background:#C8C8C8; border-radius:999px; z-index:10;"></div>
+              <!-- Video -->
+              <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover; display:block;">
+                <source src="AI Claim Vids/New Store no frame vid.mov" type="video/mp4">
+              </video>
+            </div>
+            <!-- Volume down button -->
+            <div style="position:absolute; left:-3px; top:26%; width:3px; height:7%; background:#D0D0D0; border-radius:2px 0 0 2px;"></div>
+            <!-- Volume up button -->
+            <div style="position:absolute; left:-3px; top:35%; width:3px; height:7%; background:#D0D0D0; border-radius:2px 0 0 2px;"></div>
+            <!-- Power button -->
+            <div style="position:absolute; right:-3px; top:30%; width:3px; height:9%; background:#D0D0D0; border-radius:0 2px 2px 0;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Previous vs New -->
+      <div class="two-col" style="margin-top: 0;">
+        <div>
+          <p class="P-400-SG">Previous</p>
+          <h2 class="H2-600">Users struggled to find eligible items</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Without filtering, search was very frustrating</p>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/11%20new2%20Old%20Forma%20store%20pic.png" alt="Old Forma store UI — no filtering">
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">New</p>
+          <h2 class="H2-600">Benefit filter</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Sort through various eligible benefits</p>
+          </div>
+          <div class="img-block">
+            <img src="AI%20Claim%20pics/12%20New3%20Forma%20Store%20pic.png" alt="New Forma store UI — with benefit filter">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── OUTCOMES ── -->
+    <div class="section-block" id="outcomes">
+      <p class="P-400-SP section-tag">Outcomes</p>
+      <h1 class="H1-700">Achievements</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">After these features launched, here are some outcomes we have achieved</p>
+      </div>
+      <div class="outcomes-grid">
+
+        <!-- Card 1: $50K -->
+        <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div style="margin-bottom:16px;">
+            <img src="Icons/$50K.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+          </div>
+          <h2 class="H2-600" style="margin-bottom:var(--space-05);">$50K</h2>
+          <h3 class="H3-600" style="margin-bottom:0;">Saved in benefit waste post-launch</h3>
+        </div>
+
+        <!-- Card 2: 50% -->
+        <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div style="margin-bottom:16px;">
+            <img src="Icons/50%20%25.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+          </div>
+          <h2 class="H2-600" style="margin-bottom:var(--space-05);">50%</h2>
+          <h3 class="H3-600" style="margin-bottom:0;">Time saved per claim submission</h3>
+        </div>
+
+        <!-- Card 3: 8% -->
+        <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <div style="margin-bottom:16px;">
+            <img src="Icons/8%25.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+          </div>
+          <h2 class="H2-600" style="margin-bottom:var(--space-05);">8%</h2>
+          <h3 class="H3-600" style="margin-bottom:0;">Reduced support inquiries</h3>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── REFLECTION ── -->
+    <div class="section-block" id="reflection-ai">
+      <p class="P-400-SP section-tag">Reflection x AI</p>
+      <h1 class="H1-700">How would I do things differently</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">Reduced manual entry with smarter pre-fill claim flows</p>
+      </div>
+
+      <!-- AI tools orbit -->
+      <div class="reflection-flex">
+
+        <!-- Left: text -->
+        <div class="reflection-text">
+          <h3 class="H3-600">Build my idea</h3>
+          <ul class="P-400-G reflection-list">
+            <li class="P-400-G-List">Problem framing</li>
+            <li class="P-400-G-List">Early ideation</li>
+            <li class="P-400-G-List">UX writing</li>
+            <li class="P-400-G-List">UX ideas into visual concept</li>
+            <li class="P-400-G-List">Prototype acceleration</li>
+            <li class="P-400-G-List">Handoff</li>
+            <li class="P-400-G-List">Design QA</li>
+          </ul>
+        </div>
+
+        <!-- Right: orbit (overflows right edge intentionally) -->
+        <div class="reflection-orbit">
+          <div style="position:absolute; top:50%; right:-80px; transform:translateY(-50%); width:300px; height:300px;">
+
+            <!-- Decorative rings -->
+            <div class="ai-orbit-ring" style="width:180px; height:180px;"></div>
+            <div class="ai-orbit-ring" style="width:300px; height:300px;"></div>
+
+            <!-- Center dot -->
+            <div style="position:absolute; top:50%; left:50%; width:10px; height:10px; border-radius:50%; background:var(--border); transform:translate(-50%,-50%);"></div>
+
+            <!-- Inner orbit (radius 90px, 20s) -->
+            <div class="ai-tools-orbit" style="animation:ai-orbit-i1 20s linear infinite;">
+              <div class="ai-orbit-bubble">
+                <img src="Icons/claude-color.svg" style="width:26px;height:26px;display:block;">
+              </div>
+            </div>
+            <div class="ai-tools-orbit" style="animation:ai-orbit-i2 20s linear infinite;">
+              <div class="ai-orbit-bubble">
+                <img src="Icons/gemini-color.svg" style="width:26px;height:26px;display:block;">
+              </div>
+            </div>
+            <div class="ai-tools-orbit" style="animation:ai-orbit-i3 20s linear infinite;">
+              <div class="ai-orbit-bubble">
+                <img src="Icons/lovable-color.svg" style="width:26px;height:26px;display:block;">
+              </div>
+            </div>
+
+            <!-- Outer orbit (radius 150px, 30s) -->
+            <div class="ai-tools-orbit" style="animation:ai-orbit-o1 30s linear infinite;">
+              <div class="ai-orbit-bubble">
+                <img src="Icons/claudecode-color.svg" style="width:26px;height:26px;display:block;">
+              </div>
+            </div>
+            <div class="ai-tools-orbit" style="animation:ai-orbit-o2 30s linear infinite;">
+              <div class="ai-orbit-bubble">
+                <img src="Icons/openai.svg" style="width:22px;height:22px;display:block;">
+              </div>
+            </div>
+            <div class="ai-tools-orbit" style="animation:ai-orbit-o3 30s linear infinite;">
+              <div class="ai-orbit-bubble" style="background:#000;">
+                <img src="Icons/cursor.webp" style="width:44px;height:44px;display:block;object-fit:cover;">
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- New claims feature -->
+      <div style="margin-bottom:var(--space-7);">
+        <h2 class="H2-600">New claims feature</h2>
+        <div class="feat-cards-grid" style="margin-top:var(--space-4);">
+
+          <!-- Card: Email receipt scan -->
+          <a class="feat-card" id="new-card-1" href="#email-receipt-scan">
+            <div class="feat-icon-wrap">
+              <svg id="receipt-svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <path class="receipt-line" d="M7 8h8"/>
+                <path class="receipt-line" d="M7 12h10"/>
+                <path class="receipt-line" d="M7 16h6"/>
+              </svg>
+            </div>
+            <h3 class="H3-600" style="text-align:center; width:100%;">Email receipt scan</h3>
+            <ul class="P-400-G" style="padding-left:18px; list-style:disc; margin-bottom:0;">
+              <li class="P-400-G-List">Detects receipts in Gmail</li>
+              <li class="P-400-G-List">Pre‑fills claims</li>
+            </ul>
+          </a>
+
+          <!-- Card: Policy-to-Approve -->
+          <a class="feat-card" id="new-card-2" href="#policy-to-approve">
+            <div class="feat-icon-wrap">
+              <svg id="policy-svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+                <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                <path id="policy-check" d="m9 15 2 2 4-4"/>
+              </svg>
+            </div>
+            <h3 class="H3-600" style="text-align:center; width:100%;">Policy-to-approve</h3>
+            <ul class="P-400-G" style="padding-left:18px; list-style:disc; margin-bottom:0;">
+              <li class="P-400-G-List">Instantly validate eligibility against policy, balance, and expiry</li>
+            </ul>
+          </a>
+
+          <!-- Card: 1-click Claim -->
+          <a class="feat-card" id="new-card-3" href="#one-click-claim">
+            <div class="feat-icon-wrap">
+              <svg id="click-svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path id="click-cursor" d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/>
+                <path class="click-spark-line" d="M14 4.1 12 6"/>
+                <path class="click-spark-line" d="m5.1 8-2.9-.8"/>
+                <path class="click-spark-line" d="m6 12-1.9 2"/>
+                <path class="click-spark-line" d="M7.2 2.2 8 5.1"/>
+              </svg>
+            </div>
+            <h3 class="H3-600" style="text-align:center; width:100%;">1-click claim</h3>
+            <ul class="P-400-G" style="padding-left:18px; list-style:disc; margin-bottom:0;">
+              <li class="P-400-G-List">Auto‑attaches receipts</li>
+              <li class="P-400-G-List">Submits with minimal friction</li>
+            </ul>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Email receipt scan vid -->
+      <div id="email-receipt-scan" style="margin-bottom:var(--space-7); scroll-margin-top:72px;">
+        <h2 class="H2-600">Email receipt scan</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">Users enter from Benefits or Dashboard when funds are expiring. By connecting Gmail to scan receipts and invoices</p>
+        </div>
+        <div class="refl-scan" style="margin-bottom: var(--space-1);">
+          <div class="refl-safari">
+            <div class="safari-chrome">
+              <div class="safari-lights">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="safari-url-wrap">
+                <div class="safari-url">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  client.joinforma.com
+                </div>
+              </div>
+            </div>
+            <div class="safari-video-wrap">
+              <video autoplay loop muted playsinline>
+                <source src="AI Claim Vids/New AI Claim _ Scan recipts New.mov" type="video/quicktime">
+                <source src="AI Claim Vids/New AI Claim _ Scan recipts New.mov" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Policy-to-Approve vid -->
+      <div id="policy-to-approve" style="margin-bottom:var(--space-7); scroll-margin-top:72px;">
+        <h2 class="H2-600">Policy-to-approve</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">Each receipt is categorized by different company's policy to guide users before submission</p>
+        </div>
+        <div class="refl-scan" style="margin-bottom: var(--space-1);">
+          <div class="refl-safari">
+            <div class="safari-chrome">
+              <div class="safari-lights">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="safari-url-wrap">
+                <div class="safari-url">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  client.joinforma.com
+                </div>
+              </div>
+            </div>
+            <div class="safari-video-wrap">
+              <video autoplay loop muted playsinline>
+                <source src="AI Claim Vids/New AI Claim _  Policy to approve New.mov" type="video/quicktime">
+                <source src="AI Claim Vids/New AI Claim _  Policy to approve New.mov" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time policy check carousel -->
+      <div style="margin-bottom:var(--space-7);">
+        <h2 class="H2-600">Real‑time policy check</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">Based on the real-time policy check. Each receipt is labelled: Eligible / Needs information / Not eligible</p>
+        </div>
+        <div class="carousel-wrap" id="rtpc-carousel">
+            <div class="carousel-track" id="rtpc-track">
+              <div class="carousel-slide">
+                <img src="AI%20Claim%20pics/16%20new%20Real%E2%80%91time%20policy%20check%20pic.png" alt="Real-time policy check — claim status overview">
+              </div>
+              <div class="carousel-slide">
+                <img src="AI%20Claim%20pics/17%20New2%20Eligible%20pic.png" alt="Eligible status">
+              </div>
+              <div class="carousel-slide">
+                <img src="AI%20Claim%20pics/18%20New2%20Need%20info%20pic.png" alt="Needs information status">
+              </div>
+              <div class="carousel-slide">
+                <img src="AI%20Claim%20pics/19%20New2%20Not%20eligible.png" alt="Not eligible status">
+              </div>
+            </div>
+          </div>
+          <div class="carousel-dots" id="rtpc-dots"></div>
+      </div>
+
+      <!-- 1-click claim submission vid -->
+      <div id="one-click-claim" style="margin-bottom:var(--space-7); scroll-margin-top:72px;">
+        <h2 class="H2-600">1-click claim submission</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">Once statuses are ready, users can submit multiple eligible claims at once</p>
+        </div>
+        <div class="feat1-scan" style="margin-bottom: var(--space-1);">
+          <div class="feat1-safari" style="aspect-ratio: 1920/1601;">
+            <!-- Chrome bar -->
+            <div class="safari-chrome">
+              <div class="safari-lights">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="safari-url-wrap">
+                <div class="safari-url">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  client.joinforma.com
+                </div>
+              </div>
+            </div>
+            <!-- Video content — exact video ratio, no object-fit letterboxing possible -->
+            <div class="safari-video-wrap" style="aspect-ratio: 1920/1520; flex: none; width: 100%;">
+              <video autoplay loop muted playsinline style="transform: scale(1.005); transform-origin: center;">
+                <source src="AI Claim Vids/New AI Claim _  One click submit Newest.mp4" type="video/mp4">
+                <source src="AI Claim Vids/New AI Claim _  One click submit Newest.mov" type="video/quicktime">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expected impacts -->
+      <div>
+        <h2 class="H2-600">Expected impacts</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">Through the email receipt scan feature, the expected impacts will be:</p>
+        </div>
+        <div class="outcomes-grid">
+
+          <!-- Card 1: Shorter submission time -->
+          <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <div style="margin-bottom:16px;">
+              <img src="Icons/Shorter submission time.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+            </div>
+            <h3 class="H3-600" style="margin-bottom:0;">Shorter submission time</h3>
+          </div>
+
+          <!-- Card 2: Lower rejection rate -->
+          <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <div style="margin-bottom:16px;">
+              <img src="Icons/Lower rejection rate.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+            </div>
+            <h3 class="H3-600" style="margin-bottom:0;">Lower rejection rate</h3>
+          </div>
+
+          <!-- Card 3: Faster approvals -->
+          <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <div style="margin-bottom:16px;">
+              <img src="Icons/Faster approvals.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+            </div>
+            <h3 class="H3-600" style="margin-bottom:0;">Faster approvals</h3>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NEXT PROJECT ── -->
+    <div class="section-block">
+      <h1 class="H1-700">Next project</h1>
+      <a class="next-card" href="Forma_Localization.html">
+        <div class="next-card-inner">
+          <div class="next-card-img">
+            <img src="Portfoilo%20assets/Local%20cover.jpeg" alt="Forma Localization">
+          </div>
+          <div class="next-card-meta">
+            <div class="next-card-logo">
+              <img src="Portfoilo%20assets/Forma%20Logo.png" alt="Forma">
+            </div>
+            <div class="next-card-body">
+              <div class="next-card-tags">
+                <span class="P-400-P">Fin-tech</span>
+                <span class="P-400-P">End-to-end</span>
+                <span class="P-400-P">SaaS</span>
+              </div>
+              <h2 class="H2-600">Localizing Forma's platform across 100+ countries</h2>
+            </div>
+            <span class="next-card-cta">View project <i class="next-card-arrow">↗</i></span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+  </main>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script>
+  // ── Top nav slot-machine entrance ──
+  (function() {
+    var slots = document.querySelectorAll('.tn-slot');
+    slots.forEach(function(slot) {
+      var ghost = slot.querySelector('.tn-ghost');
+      slot.style.width = ghost.scrollWidth + 'px';
+    });
+    requestAnimationFrame(function() {
+      slots.forEach(function(slot) { slot.classList.add('entered'); });
+    });
+  })();
+
+  // ── Top nav compact on scroll-down, expand on scroll-up ──
+  (function() {
+    var nav = document.getElementById('top-nav');
+    var lastY = window.scrollY;
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        var y = window.scrollY;
+        if (y > lastY && y > 60) nav.classList.add('nav-compact');
+        else if (y < lastY) nav.classList.remove('nav-compact');
+        lastY = y;
+        ticking = false;
+      });
+    }, { passive: true });
+  })();
+
+  // ── 3-modes iframe auto-resize ──
+  window.addEventListener('message', function(e) {
+    if (e.data && typeof e.data.formaIframeHeight === 'number') {
+      var iframe = document.getElementById('modes-iframe');
+      if (iframe) iframe.style.height = e.data.formaIframeHeight + 'px';
+    }
+  });
+
+  // ── Carousel ──
+  (function() {
+    const container  = document.getElementById('rtpc-carousel');
+    const track      = document.getElementById('rtpc-track');
+    const dotsWrap   = document.getElementById('rtpc-dots');
+    const slides     = Array.from(track.children);
+    const GAP        = 16;
+    const SLIDE_RATIO = 0.875;
+
+    let current = 0;
+    let slideWidth = 0;
+
+    // Build dots
+    slides.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', `Slide ${i + 1}`);
+      btn.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(btn);
+    });
+
+    const dots = Array.from(dotsWrap.children);
+
+    function init() {
+      const cw = container.offsetWidth;
+      // Desktop (≥840px): fixed 840px slide; mobile: 87.5% peek
+      slideWidth = cw >= 840 ? 840 : cw * SLIDE_RATIO;
+      slides.forEach(s => { s.style.width = slideWidth + 'px'; });
+      goTo(current, false);
+    }
+
+    function goTo(n, animate = true) {
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      const cw = container.offsetWidth;
+      let offset;
+      if (current === 0) {
+        offset = 0;                      // 首張：左對齊
+      } else if (current === slides.length - 1) {
+        offset = cw - slideWidth;        // 末張：右對齊
+      } else {
+        offset = (cw - slideWidth) / 2;  // 中間：置中
+      }
+      const x = -(current * (slideWidth + GAP)) + offset;
+
+      if (!animate) {
+        track.style.transition = 'none';
+        track.style.transform  = `translateX(${x}px)`;
+        track.offsetHeight;
+        track.style.transition = '';
+      } else {
+        track.style.transform = `translateX(${x}px)`;
+      }
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    // Touch swipe
+    let touchStartX = 0, touchDeltaX = 0;
+    container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    container.addEventListener('touchmove',  e => { touchDeltaX = e.touches[0].clientX - touchStartX; }, { passive: true });
+    container.addEventListener('touchend',   () => {
+      if (Math.abs(touchDeltaX) > 40) touchDeltaX < 0 ? goTo(current + 1) : goTo(current - 1);
+      touchDeltaX = 0;
+    });
+
+    const ro = new ResizeObserver(init);
+    ro.observe(container);
+    init();
+  })();
+
+  // ── Sidebar scroll-triggered show/hide ──
+  (function() {
+    const SHOW_AT = 160;
+    const HIDE_AT = 60;
+    let sidebarVisible = false;
+    let staggerTimers = [];
+
+    const sidebarHome = document.querySelector('.sidebar-home');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    function showSidebar() {
+      if (sidebarVisible) return;
+      sidebarVisible = true;
+      staggerTimers.forEach(clearTimeout);
+      staggerTimers = [];
+      if (sidebarHome) {
+        sidebarHome.classList.remove('hiding');
+        sidebarHome.classList.add('visible');
+      }
+      navLinks.forEach((btn, i) => {
+        const t = setTimeout(() => {
+          btn.classList.remove('hiding');
+          btn.classList.add('visible');
+        }, i * 40);
+        staggerTimers.push(t);
+      });
+    }
+
+    function hideSidebar() {
+      if (!sidebarVisible) return;
+      sidebarVisible = false;
+      staggerTimers.forEach(clearTimeout);
+      staggerTimers = [];
+      if (sidebarHome) {
+        sidebarHome.classList.add('hiding');
+        sidebarHome.classList.remove('visible');
+      }
+      navLinks.forEach(btn => {
+        btn.classList.add('hiding');
+        btn.classList.remove('visible');
+      });
+      setTimeout(() => {
+        if (sidebarHome) sidebarHome.classList.remove('hiding');
+        navLinks.forEach(btn => btn.classList.remove('hiding'));
+      }, 320);
+    }
+
+    window.addEventListener('scroll', function() {
+      const y = window.scrollY;
+      if (y > SHOW_AT) showSidebar();
+      else if (y < HIDE_AT) hideSidebar();
+    }, { passive: true });
+  })();
+
+  // ── Sidebar smooth scroll ──
+  document.querySelectorAll('.nav-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = document.getElementById(btn.dataset.target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ── Scroll-spy ──
+  const navLinks = document.querySelectorAll('.nav-link');
+  const spySections = [...navLinks].map(btn => document.getElementById(btn.dataset.target)).filter(Boolean);
+  const spyObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(btn => btn.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+  spySections.forEach(s => spyObs.observe(s));
+
+  // ── Feature card animations ──
+  (function() {
+    // Smooth SVG attribute animation utility
+    function animAttr(el, attr, to, dur) {
+      const from = parseFloat(el.getAttribute(attr));
+      const t0 = performance.now();
+      (function step(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const e = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        el.setAttribute(attr, from + (to - from) * e);
+        if (p < 1) requestAnimationFrame(step);
+      })(t0);
+    }
+
+    // ── Bento grid icon hover animations ──
+
+    // Bento Card 1 — Sparkles
+    var bentoCard1 = document.getElementById('bento-card-1');
+    var bentoSparkleMain = document.getElementById('bento-sparkle-main');
+    var bentoSparkleStars = document.querySelectorAll('.bento-sparkle-star');
+    var bentoBlink1 = null;
+    bentoCard1.addEventListener('mouseenter', function() {
+      bentoSparkleMain.style.transition = 'fill .3s, transform .3s cubic-bezier(.16,1,.3,1)';
+      bentoSparkleMain.style.fill = '#4E008E';
+      bentoSparkleMain.style.transform = 'translateY(-1px)';
+      function doBlink1() {
+        bentoSparkleStars.forEach(function(s) { s.style.transition = 'opacity .25s'; s.style.opacity = '0'; });
+        setTimeout(function() { bentoSparkleStars.forEach(function(s) { s.style.opacity = '1'; }); }, 500);
+        setTimeout(function() { bentoSparkleStars.forEach(function(s) { s.style.opacity = '0'; }); }, 1000);
+        setTimeout(function() { bentoSparkleStars.forEach(function(s) { s.style.opacity = '1'; }); }, 1500);
+      }
+      doBlink1();
+      bentoBlink1 = setInterval(doBlink1, 2000);
+    });
+    bentoCard1.addEventListener('mouseleave', function() {
+      bentoSparkleMain.style.fill = 'none';
+      bentoSparkleMain.style.transform = 'translateY(0)';
+      bentoSparkleStars.forEach(function(s) { s.style.opacity = '1'; });
+      if (bentoBlink1) { clearInterval(bentoBlink1); bentoBlink1 = null; }
+    });
+
+    // Bento Card 2 — BadgeAlert shake
+    var bentoCard2 = document.getElementById('bento-card-2');
+    var bentoBadgeSvg = document.getElementById('bento-badge-svg');
+    bentoCard2.addEventListener('mouseenter', function() {
+      bentoBadgeSvg.style.animation = 'none';
+      requestAnimationFrame(function() {
+        bentoBadgeSvg.style.animation = 'badge-shake 0.5s ease-in-out';
+      });
+    });
+    bentoBadgeSvg.addEventListener('animationend', function() {
+      bentoBadgeSvg.style.animation = 'none';
+    });
+
+    // Bento Card 3 — Sliders
+    var bentoCard3 = document.getElementById('bento-card-3');
+    var bentoSlNormal = {
+      'bento-sl1':{x2:14}, 'bento-sl2':{x1:10}, 'bento-sl3':{x2:12}, 'bento-sl4':{x1:8},
+      'bento-sl5':{x2:12}, 'bento-sl6':{x1:16}, 'bento-sl7':{x1:14,x2:14}, 'bento-sl8':{x1:8,x2:8}, 'bento-sl9':{x1:16,x2:16}
+    };
+    var bentoSlActive = {
+      'bento-sl1':{x2:10}, 'bento-sl2':{x1:5},  'bento-sl3':{x2:18}, 'bento-sl4':{x1:13},
+      'bento-sl5':{x2:4},  'bento-sl6':{x1:8},  'bento-sl7':{x1:9,x2:9},  'bento-sl8':{x1:14,x2:14}, 'bento-sl9':{x1:8,x2:8}
+    };
+    function bentoSlidersTo(state) {
+      for (var id in state) {
+        var el = document.getElementById(id);
+        if (!el) continue;
+        var attrs = state[id];
+        for (var attr in attrs) {
+          animAttr(el, attr, attrs[attr], 300);
+        }
+      }
+    }
+    bentoCard3.addEventListener('mouseenter', function() { bentoSlidersTo(bentoSlActive); });
+    bentoCard3.addEventListener('mouseleave', function() { bentoSlidersTo(bentoSlNormal); });
+
+    // ── New claims cards ──
+
+    // New Card 1: Email receipt scan — lines wipe out then wipe back in (staggered)
+    var newCard1 = document.getElementById('new-card-1');
+    var receiptLines = document.querySelectorAll('.receipt-line');
+    var receiptTimers = [];
+
+    newCard1.addEventListener('mouseenter', function() {
+      receiptTimers.forEach(clearTimeout);
+      receiptTimers = [];
+      // Phase 1: wipe out (offset 0→12, opacity 1→0), staggered 100ms apart, 300ms each
+      receiptLines.forEach(function(line, i) {
+        receiptTimers.push(setTimeout(function() {
+          line.style.transition = 'stroke-dashoffset 0.3s ease-in, opacity 0.3s ease-in';
+          line.style.strokeDashoffset = '12';
+          line.style.opacity = '0';
+        }, i * 100));
+      });
+      // Phase 2: wipe in (offset 12→0, opacity 0→1), staggered 100ms apart, 300ms each
+      // starts after phase 1 fully completes (last line starts at 200ms + 300ms = 500ms)
+      receiptLines.forEach(function(line, i) {
+        receiptTimers.push(setTimeout(function() {
+          line.style.transition = 'stroke-dashoffset 0.3s ease-out, opacity 0.3s ease-out';
+          line.style.strokeDashoffset = '0';
+          line.style.opacity = '1';
+        }, 520 + i * 100));
+      });
+    });
+    newCard1.addEventListener('mouseleave', function() {
+      receiptTimers.forEach(clearTimeout);
+      receiptTimers = [];
+      receiptLines.forEach(function(line) {
+        line.style.transition = 'none';
+        line.style.strokeDashoffset = '0';
+        line.style.opacity = '1';
+      });
+    });
+
+    // New Card 2: Policy-to-approve — checkmark draws in with opacity, stays visible on leave
+    var newCard2 = document.getElementById('new-card-2');
+    var policyCheck = document.getElementById('policy-check');
+
+    newCard2.addEventListener('mouseenter', function() {
+      policyCheck.style.transition = 'none';
+      policyCheck.style.strokeDashoffset = '10';
+      policyCheck.style.opacity = '0';
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          policyCheck.style.transition = 'stroke-dashoffset 0.4s ease-in-out, opacity 0.4s ease-in-out';
+          policyCheck.style.strokeDashoffset = '0';
+          policyCheck.style.opacity = '1';
+        });
+      });
+    });
+    newCard2.addEventListener('mouseleave', function() {
+      // stay visible — just ensure clean state
+      policyCheck.style.transition = 'none';
+      policyCheck.style.strokeDashoffset = '0';
+      policyCheck.style.opacity = '1';
+    });
+
+    // New Card 3: 1-click claim — cursor hops up/diagonal, sparks spread after 1.3s
+    var newCard3 = document.getElementById('new-card-3');
+    var clickCursor = document.getElementById('click-cursor');
+    var clickSparks = document.querySelectorAll('.click-spark-line');
+    var sparkOffsets = [{x:1,y:-1}, {x:-1,y:0}, {x:-1,y:1}, {x:0,y:-1}];
+    var sparkTimers = [];
+
+    newCard3.addEventListener('mouseenter', function() {
+      sparkTimers.forEach(clearTimeout);
+      sparkTimers = [];
+      // cursor hop animation
+      clickCursor.style.animation = 'none';
+      requestAnimationFrame(function() {
+        clickCursor.style.animation = 'cursor-hop 1s cubic-bezier(.16,1,.3,1)';
+      });
+      // sparks spread outward after 1.3s delay
+      sparkTimers.push(setTimeout(function() {
+        clickSparks.forEach(function(spark, i) {
+          var off = sparkOffsets[i];
+          spark.style.transition = 'none';
+          spark.style.opacity = '0';
+          spark.style.transform = 'translate(0,0)';
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              spark.style.transition = 'opacity 0.15s ease, transform 0.5s cubic-bezier(.16,1,.3,1)';
+              spark.style.opacity = '1';
+              spark.style.transform = 'translate('+off.x+'px,'+off.y+'px)';
+              sparkTimers.push(setTimeout(function() {
+                spark.style.transition = 'transform 0.5s cubic-bezier(.16,1,.3,1)';
+                spark.style.transform = 'translate(0,0)';
+              }, 200));
+            });
+          });
+        });
+      }, 1300));
+    });
+    newCard3.addEventListener('mouseleave', function() {
+      sparkTimers.forEach(clearTimeout);
+      sparkTimers = [];
+      clickCursor.style.animation = 'none';
+      clickSparks.forEach(function(spark) {
+        spark.style.transition = 'none';
+        spark.style.opacity = '1';
+        spark.style.transform = 'translate(0,0)';
+      });
+    });
+    clickCursor.addEventListener('animationend', function() {
+      clickCursor.style.animation = 'none';
+    });
+
+  })();
+
+  // ── Video play/pause buttons ──
+  (function() {
+    var pauseIcon = '<svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="3.5" height="12" rx="1.5" fill="#1c1c1e"/><rect x="7.5" y="1" width="3.5" height="12" rx="1.5" fill="#1c1c1e"/></svg>';
+    var playIcon  = '<svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 1.5L11.5 7L2 12.5V1.5Z" fill="#1c1c1e"/></svg>';
+
+    document.querySelectorAll('video').forEach(function(video) {
+      var container = video.parentElement;
+      var pos = getComputedStyle(container).position;
+      if (pos !== 'relative' && pos !== 'absolute') return;
+
+      var btn = document.createElement('button');
+      btn.className = 'video-play-btn';
+      btn.setAttribute('aria-label', 'Pause video');
+      btn.innerHTML = pauseIcon;
+
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (video.paused) {
+          video.play();
+          btn.innerHTML = pauseIcon;
+          btn.setAttribute('aria-label', 'Pause video');
+        } else {
+          video.pause();
+          btn.innerHTML = playIcon;
+          btn.setAttribute('aria-label', 'Play video');
+        }
+      });
+
+      container.appendChild(btn);
+    });
+  })();
+</script>
+
+<!-- ════ FOOTER ════ -->
+<style>
+  .site-footer {
+    padding: var(--space-6) 0 var(--space-7);
+    background: #ffffff;
+  }
+  .site-footer-inner {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 48px);
+  }
+  .footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .footer-brand-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer-brand-icon img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+  .footer-brand-name {
+    font-family: 'OggLocal', 'Ogg', 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: -0.03em;
+    color: #4E008E;
+  }
+  .footer-social {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+  }
+  .footer-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+    color: #58534d;
+    text-decoration: none;
+    transition: background 0.18s, color 0.18s, transform 0.18s cubic-bezier(.62,.61,.02,1), box-shadow 0.18s;
+  }
+  .footer-social a:hover {
+    background: #4E008E;
+    color: #fff;
+    border-color: transparent;
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(78,0,142,0.28);
+  }
+  .footer-social a svg { width: 18px; height: 18px; }
+  .footer-bottom {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border, #e8e8e8);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+  .footer-copy {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0em;
+    line-height: 1.75;
+    color: #808080;
+    white-space: nowrap;
+  }
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px 16px;
+    list-style: none;
+  }
+  .footer-nav a {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0em;
+    line-height: 1.75;
+    color: #1c1c1e;
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  .footer-nav a:hover { color: #4E008E; }
+  @media (max-width: 834px) {
+    .site-footer { padding-bottom: var(--space-7); }
+  }
+  @media (max-width: 640px) {
+    .site-footer-inner { padding: 0 20px; }
+    .footer-bottom {
+      grid-template-columns: 1fr;
+    }
+    .footer-nav { justify-content: flex-start; }
+  }
+  @media (max-width: 480px) {
+    .site-footer { padding-bottom: var(--space-6); }
+  }
+</style>
+
+<footer class="site-footer" id="footer">
+  <div class="site-footer-inner">
+    <div class="footer-top">
+      <a class="footer-brand" href="index.html" aria-label="Todd Wu Home">
+        <div class="footer-brand-icon">
+          <img src="Portfoilo%20assets/Purple flower.png" alt="Todd Wu favicon">
+        </div>
+        <span class="footer-brand-name">Todd Wu</span>
+      </a>
+      <ul class="footer-social">
+        <li>
+          <a href="https://www.linkedin.com/in/toddwu/" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect x="2" y="9" width="4" height="12"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a href="mailto:519todd@gmail.com" target="_blank" rel="noopener" aria-label="Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Todd Wu. All rights reserved.</span>
+      <ul class="footer-nav">
+        <li><a href="index.html?skip#home">Home</a></li>
+        <li><a href="index.html#projects" onclick="sessionStorage.setItem('skipAnim','1')">Work</a></li>
+        <li><a href="https://drive.google.com/file/d/16OojuAUbyHFc4g4vsuJPGgL4GE0P2lHN/view?usp=sharing" target="_blank" rel="noopener">Resume</a></li>
+        <li><a href="mailto:519todd@gmail.com">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
