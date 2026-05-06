@@ -1223,10 +1223,11 @@
         }
         .em-isl {
           position:absolute; top:12px; left:50%; transform:translateX(-50%);
-          width:104px; height:31px; background:#000; border-radius:20px; z-index:20;
+          width:104px; height:31px; background:#000; border-radius:20px; z-index:30;
         }
         .em-sb {
           position:absolute; top:0; left:0; right:0; height:52px;
+          background:#347DFB;
           display:flex; align-items:flex-end; padding:0 20px 10px;
           justify-content:space-between; z-index:10;
         }
@@ -1309,8 +1310,7 @@
           background:#2C2B40; border:1.5px solid rgba(255,255,255,0.08);
           border-radius:9px; padding:8px 12px; margin-top:8px;
         }
-        .em-cl { font-size:12.5px; color:#fff; }
-        .em-cv2 { flex:1; font-size:12.5px; color:rgba(255,255,255,0.22); }
+        .em-cl { font-size:12.5px; color:rgba(255,255,255,0.4); }
         .em-mbox {
           background:#2C2B40; border:1.5px solid rgba(255,255,255,0.08);
           border-radius:9px; padding:10px 12px; min-height:60px; margin-top:8px;
@@ -1360,6 +1360,30 @@
           width:118px; height:5px; background:rgba(255,255,255,0.38);
           border-radius:3px; z-index:20;
         }
+        /* Push notification banner */
+        .em-notif {
+          position:absolute; top:0; left:0; right:0; z-index:200;
+          padding:10px 10px 0;
+          transform:translateY(-110%);
+          transition:transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94);
+          pointer-events:none;
+        }
+        .em-notif.show { transform:translateY(0); }
+        .em-notif-inner {
+          background:rgba(62,60,80,0.92);
+          backdrop-filter:blur(20px);
+          -webkit-backdrop-filter:blur(20px);
+          border-radius:14px; padding:10px 14px;
+          display:flex; align-items:center; gap:10px;
+        }
+        .em-notif-icon {
+          width:34px; height:34px; border-radius:8px; flex-shrink:0;
+          background:#347DFB;
+          display:flex; align-items:center; justify-content:center;
+        }
+        .em-notif-body { flex:1; min-width:0; }
+        .em-notif-app { font-size:10px; font-weight:500; color:rgba(255,255,255,0.55); margin-bottom:2px; }
+        .em-notif-msg { font-size:12px; font-weight:500; color:#fff; line-height:1.35; }
       </style>
 
       <div id="intro-video" class="feat1-scan em-demo-wrap">
@@ -1367,7 +1391,7 @@
           <div class="em-vup"></div><div class="em-vdn"></div><div class="em-pwr"></div>
           <div class="em-sw">
             <div class="em-isl"></div>
-            <!-- Status bar -->
+            <!-- Status bar (blue, matches nav bar) -->
             <div class="em-sb">
               <span class="em-sb-t">9:41</span>
               <div class="em-sb-i">
@@ -1388,20 +1412,20 @@
                     <div class="em-hsp"></div>
                   </div>
                   <div class="em-scr">
-                    <!-- Row 1: Mirko — completed -->
+                    <!-- Row 1: completed -->
                     <div class="em-row">
                       <div class="em-rl"><div class="em-rd">Feb 22, 2026</div><div class="em-rt">12:58 – 13:28</div></div>
-                      <div class="em-rr"><div class="em-ra">$35.19</div><div class="em-rs">30 min · 7.6 mi</div></div>
+                      <div class="em-rr"><div class="em-ra">$37.19</div><div class="em-rs">30 min · 7.6 mi</div></div>
                       <div class="em-rc">›</div>
                     </div>
                     <!-- Row 2: Maria — cancelled (tap target) -->
                     <div class="em-row" id="emRowM">
                       <div class="em-rl"><div class="em-rd">Feb 22, 2026</div><div class="em-rt">02:44 – 02:49</div></div>
-                      <div class="em-rr"><div class="em-ra">$7.50</div><div class="em-rs x">Ride cancelled</div></div>
+                      <div class="em-rr"><div class="em-ra">$9.50</div><div class="em-rs x">Ride cancelled</div></div>
                       <div class="em-rc">›</div>
                       <div class="em-rip" id="emRip1" style="top:14px;left:70px;"></div>
                     </div>
-                    <!-- Row 3: Faruq — completed -->
+                    <!-- Row 3: completed -->
                     <div class="em-row">
                       <div class="em-rl"><div class="em-rd">Feb 18, 2026</div><div class="em-rt">13:20 – 13:42</div></div>
                       <div class="em-rr"><div class="em-ra">$9.40</div><div class="em-rs">22 min · 7.6 mi</div></div>
@@ -1441,11 +1465,11 @@
                         <div class="em-tip" id="emT5">$5</div>
                         <div class="em-tip" id="emT10">$10</div>
                       </div>
-                      <div class="em-cust"><span class="em-cl">Custom</span><span class="em-cv2">$0.00</span></div>
+                      <div class="em-cust"><span class="em-cl">Custom</span></div>
                     </div>
                     <div style="margin:12px 14px 0;">
                       <div class="em-sl">Message (Optional)</div>
-                      <div class="em-mbox" id="emMbox"><span class="em-ph" id="emPh">Sorry for the cancellation.</span><span id="emTyp" style="display:none;"></span><span class="em-cur h" id="emCur"></span></div>
+                      <div class="em-mbox" id="emMbox"><span class="em-ph" id="emPh"></span><span id="emTyp" style="display:none;"></span><span class="em-cur h" id="emCur"></span></div>
                     </div>
                     <div style="height:70px;"></div>
                   </div>
@@ -1461,7 +1485,7 @@
                       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" style="flex-shrink:0;margin-top:1px;"><circle cx="11" cy="11" r="11" fill="#22c55e"/><path d="M6 11L9.5 14.5L16 7.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       <div>
                         <div style="font-size:14px;font-weight:600;color:#fff;font-family:-apple-system,sans-serif;margin-bottom:4px;">Compensated</div>
-                        <div style="font-size:12px;color:rgba(255,255,255,0.6);font-family:-apple-system,sans-serif;line-height:1.4;">You compensated $5.00 to Maria Garcia.</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.6);font-family:-apple-system,sans-serif;line-height:1.4;">You compensated $2.00 to Maria Garcia.</div>
                       </div>
                     </div>
                   </div>
@@ -1472,6 +1496,18 @@
                   <div class="em-hi"></div>
                 </div>
 
+              </div>
+            </div>
+            <!-- Push notification banner (overlays entire phone screen) -->
+            <div class="em-notif" id="emNotif">
+              <div class="em-notif-inner">
+                <div class="em-notif-icon">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1C6.24 1 4 3.24 4 6v5l-1.5 1.5V13h13v-.5L14 11V6C14 3.24 11.76 1 9 1Z" fill="white"/><path d="M9 17c1.1 0 2-.9 2-2H7c0 1.1.9 2 2 2Z" fill="white"/></svg>
+                </div>
+                <div class="em-notif-body">
+                  <div class="em-notif-app">Empower</div>
+                  <div class="em-notif-msg">Driver Maria Garcia: Thank you for your tip 😊</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1515,58 +1551,65 @@
           q('emRip1').classList.remove('go');
           q('emRip2').classList.remove('go');
           q('emBk').classList.remove('fl');
+          q('emNotif').classList.remove('show');
 
           /* ── sequence ── */
-          after(1500, function(){
+          after(1200, function(){
             q('emRowM').classList.add('hl');
             rip(q('emRip1'));
           });
-          after(2100, function(){
+          after(1700, function(){
             slides.style.transition = '';
             requestAnimationFrame(function(){ if(ok()) slides.classList.add('s2'); });
             q('emRowM').classList.remove('hl');
           });
-          after(3500, function(){
-            q('emT5').classList.add('sel');
+          after(3200, function(){
+            q('emT2').classList.add('sel');
             send.classList.add('on');
-            send.textContent = 'Send $5.00 to Maria Garcia';
+            send.textContent = 'Send $2.00 to Maria Garcia';
           });
-          after(4400, function(){
+          after(4500, function(){
             q('emPh').style.display = 'none';
             q('emTyp').style.display = 'inline';
             q('emCur').classList.remove('h');
             q('emMbox').classList.add('fc');
-            var msg = "I'm sorry!"; var i = 0;
+            var msg = "Sorry"; var i = 0;
             (function type(){
               if(!ok()) return;
-              if(i < msg.length){ q('emTyp').textContent += msg[i++]; setTimeout(type,75); }
+              if(i < msg.length){ q('emTyp').textContent += msg[i++]; setTimeout(type,90); }
             })();
           });
-          after(5600, function(){
+          after(6200, function(){
             q('emCur').classList.add('h');
             send.classList.add('pr');
           });
-          after(5760, function(){
+          after(6400, function(){
             send.classList.remove('pr');
             q('emLd').classList.add('show');
           });
-          after(6650, function(){
+          after(7400, function(){
             q('emLd').classList.remove('show');
             q('emNorm').style.display = 'none';
             send.style.display = 'none';
             q('emSucc').style.display = '';
           });
-          after(8500, function(){
+          after(9200, function(){
             q('emBk').classList.add('fl');
             rip(q('emRip2'));
           });
-          after(8700, function(){ q('emBk').classList.remove('fl'); });
-          after(9000, function(){
+          after(9400, function(){ q('emBk').classList.remove('fl'); });
+          after(9800, function(){
             slides.style.transition = '';
             requestAnimationFrame(function(){ if(ok()) slides.classList.remove('s2'); });
             send.style.display = '';
           });
-          after(12000, run);
+          after(10500, function(){
+            q('emNotif').classList.add('show');
+          });
+          after(12800, function(){
+            q('emNotif').classList.remove('show');
+          });
+          after(14500, run);
         }
 
         setTimeout(run, 300);
