@@ -1086,6 +1086,60 @@
     .rocket-fire-2 { transition: d 0.3s ease; }
     .rocket-card-2:hover .rocket-fire-2 { animation: fire-morph 2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
 
+    /* ── HAND COINS ICON ── */
+    @keyframes hand-coin-drop {
+      from { transform: translateY(-20px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+    .hand-coin-c1, .hand-coin-c2 { transform-box: fill-box; transform-origin: center; }
+    .hand-coin-card:hover .hand-coin-c1 {
+      animation: hand-coin-drop 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .hand-coin-card:hover .hand-coin-c2 {
+      animation: hand-coin-drop 0.5s cubic-bezier(0.16,1,0.3,1) 0.15s both;
+    }
+
+    /* ── CHESS KNIGHT ICON ── */
+    @keyframes knight-jump {
+      0%   { transform: rotate(0deg)  translateY(0px);   }
+      10%  { transform: rotate(12deg) translateY(-2px);  }
+      30%  { transform: rotate(38deg) translateY(-9px);  }
+      45%  { transform: rotate(42deg) translateY(-12px); }
+      60%  { transform: rotate(38deg) translateY(-9px);  }
+      78%  { transform: rotate(10deg) translateY(-2px);  }
+      90%  { transform: rotate(-5deg) translateY(1px);   }
+      100% { transform: rotate(0deg)  translateY(0px);   }
+    }
+    .chess-knight-g { transform-box: view-box; transform-origin: 12px 22px; }
+    .chess-knight-card:hover .chess-knight-g {
+      animation: knight-jump 0.9s ease-in-out forwards;
+    }
+
+    /* ── LAUGH ICON ── */
+    @keyframes laugh-face-anim {
+      0%   { transform: scale(1)    rotate(0deg);  }
+      20%  { transform: scale(1.15) rotate(3deg);  }
+      40%  { transform: scale(1)    rotate(-2deg); }
+      60%  { transform: scale(1.1)  rotate(3deg);  }
+      100% { transform: scale(1.05) rotate(0deg);  }
+    }
+    @keyframes laugh-eyes-anim {
+      0%   { transform: scale(1);   }
+      30%  { transform: scale(1.3); }
+      60%  { transform: scale(1);   }
+      100% { transform: scale(1.7); }
+    }
+    @keyframes laugh-mouth-anim {
+      0%   { transform: scaleY(1);   }
+      50%  { transform: scaleY(1.2); }
+      100% { transform: scaleY(1.1); }
+    }
+    .laugh-card:hover .laugh-svg { animation: laugh-face-anim 1.2s ease-in-out forwards; }
+    .laugh-eye { transform-box: fill-box; transform-origin: center; }
+    .laugh-card:hover .laugh-eye { animation: laugh-eyes-anim 0.6s ease-in-out forwards; }
+    .laugh-mouth { transform-box: fill-box; transform-origin: center; }
+    .laugh-card:hover .laugh-mouth { animation: laugh-mouth-anim 0.6s ease-in-out forwards; }
+
     /* ── SMILE-PLUS ICON (Results card) ── */
     @keyframes smile-scale {
       0%   { transform: scale(1); }
@@ -1155,6 +1209,7 @@
       <button class="nav-link" data-target="feature-1">Feature 1</button>
       <button class="nav-link" data-target="feature-2">Feature 2</button>
       <button class="nav-link" data-target="feature-3">Feature 3</button>
+      <button class="nav-link" data-target="outcomes">Next steps</button>
     </nav>
   </aside>
 
@@ -1166,7 +1221,7 @@
     <div id="hero" style="scroll-margin-top:120px;">
 
       <p class="P-400-SP section-tag">Intro</p>
-      <h1 class="H1-700">Rider tip and compensation: from idea to CEO proposal in 3 days</h1>
+      <h1 class="H1-700">Rider tip and compensation:<br>From idea to CEO proposal in 3 days</h1>
 
       <!-- Info block (no dark background) -->
       <div class="intro-dark">
@@ -1189,23 +1244,35 @@
             <p class="P-400-B">Users interviews<br>Competitive analysis<br>Prototypes<br>Vibe coding</p>
           </div>
         </div>
+
+        <!-- Intro — Phone Mock -->
+        <div id="intro-video" class="feat1-scan" style="display:flex; justify-content:center; align-items:center; background:#FFFFFF; margin-bottom:var(--space-4);">
+          <img src="Empower Vid/Phone Mock.png" alt="Phone mockup" style="height:90cqh; width:auto; max-width:90cqw; object-fit:contain; display:block;">
+        </div>
+
+        <!-- Why this matters & What I've designed -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); margin-bottom:var(--space-4);">
+          <div>
+            <h3 class="H3-500" style="margin-bottom:1rem;">Why this matters</h3>
+            <ul style="padding-left:1.25em; margin:0; list-style:disc;">
+              <li class="P-400-G-List" style="margin-bottom:1rem; color:#1c1c1e;">Riders have no way to tip or acknowledge drivers after completed or cancelled rides</li>
+              <li class="P-400-G-List" style="margin-bottom:1rem; color:#1c1c1e;">Drivers don't get clear, structured compensation for no-shows or last-minute cancellations</li>
+              <li class="P-400-G-List" style="margin-bottom:0; color:#1c1c1e;">This is a missed opportunity to reinforce Empower's promise of driver fairness and strengthen driver satisfaction</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="H3-500" style="margin-bottom:1rem;">What I've designed</h3>
+            <p class="P-400-G">A lightweight flow integrated into the existing app:</p>
+            <ul style="padding-left:1.25em; margin:0; list-style:disc;">
+              <li class="P-400-G-List" style="margin-bottom:1rem; color:#1c1c1e;"><span style="font-weight:500;">Entry:</span> Home → Menu → Ride History → select a ride</li>
+              <li class="P-400-G-List" style="margin-bottom:1rem; color:#1c1c1e;"><span style="font-weight:500;">Completed rides:</span> Ride details + "Thank your driver" (tip + optional message)</li>
+              <li class="P-400-G-List" style="margin-bottom:1rem; color:#1c1c1e;"><span style="font-weight:500;">Cancelled rides:</span> "Compensate driver" flow (tip/compensation + optional message)</li>
+              <li class="P-400-G-List" style="margin-bottom:0; color:#1c1c1e;">UI follows the existing Empower design language</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
-      <!-- Intro — Phone Mock -->
-      <style>
-        .em-demo-wrap { display:flex; justify-content:center; align-items:center; margin-top: var(--space-4); }
-      </style>
-
-      <div id="intro-video" class="feat1-scan em-demo-wrap" style="background:#FFFFFF;">
-        <img src="Empower Vid/Phone Mock.png" alt="Phone mockup" style="height:90cqh; width:auto; max-width:90cqw; object-fit:contain; display:block;">
-      </div>
-
-      <!-- ── Calcelled video block ── -->
-      <div style="display:flex; justify-content:center; margin-top: var(--space-4);">
-        <video autoplay loop muted playsinline style="width:72%; display:block; border-radius:16px; overflow:hidden; transform:translateZ(0); -webkit-transform:translateZ(0); will-change:transform; background:#F8F8F8;">
-          <source src="https://pub-a4bbb839cc8f41d6a4daf0dc95ce51c0.r2.dev/Cancelled.mp4" type="video/mp4">
-        </video>
-      </div>
 
 
     </div>
@@ -1240,7 +1307,7 @@
 
         <div style="background:#f8f8f8; border-radius:16px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--space-2);">
           <p class="P-400-SG" style="margin-bottom:var(--space-1);">Business problem</p>
-          <div style="display:flex; justify-content:center;">
+          <div style="display:flex; justify-content:center; padding:8px 0;">
             <img src="Empower Vid/Business problem.png" alt="" style="width:40px; height:40px; object-fit:contain;">
           </div>
           <p class="P-400-G-List" style="margin-bottom:0; color:#1C1C1E; flex:1;">A missed opportunity to reinforce Empower's promise of driver fairness</p>
@@ -1248,383 +1315,69 @@
 
       </div>
 
-      <div class="two-col" style="margin-top: var(--space-7);">
-        <div style="min-width:0;">
-          <p class="P-400-SG">User Problem</p>
-          <h2 class="H2-600">International users couldn't access their benefits</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">These barriers led to poor accessibility</p>
-          </div>
-          <div class="img-block" style="background:#f8f8f8; padding: 16px; aspect-ratio: 476 / 390.63; display:flex; flex-direction:column;">
-            <div style="position:relative;width:100%;flex:1;min-height:0;">
-              <canvas id="formaBarChart"
-                role="img"
-                aria-label="Horizontal bar chart of top international Forma user countries by visitor count"
-                style="position:absolute;top:0;left:0;width:100%;height:100%;">
-                India 11.8k, UK 8.8k, Canada 6.3k, Australia 3.7k, Japan 3.6k, Ireland 3.0k, Mexico 2.4k, Germany 2.4k, Netherlands 2.1k, France 2.0k
-              </canvas>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;font-size:11px;color:#808080;align-items:center;justify-content:center;flex-shrink:0;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,sans-serif;">
-              <span><span style="width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;background:#4E008E;"></span>Visitors (non-US)</span>
-              <span>Source: Forma analytics</span>
-            </div>
-          </div>
-        </div>
-        <div style="min-width:0;">
-          <p class="P-400-SG">Business Problem</p>
-          <h2 class="H2-600">Unmet market needs</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Clients are frequently requesting that Forma incorporate support for additional languages</p>
-          </div>
-          <div class="img-block" style="background:#f8f8f8; padding: 16px; aspect-ratio: 476 / 390.63; display:flex; flex-direction:column; justify-content:center;">
-              <div style="width:100%;background:#ffffff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;overflow:hidden;">
-                <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,'Helvetica Neue',sans-serif;">
-                  <thead>
-                    <tr style="border-bottom:0.5px solid rgba(0,0,0,0.18);">
-                      <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:500;color:#808080;letter-spacing:0.04em;width:28%;">Client</th>
-                      <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:500;color:#808080;letter-spacing:0.04em;width:44%;">Languages requested</th>
-                      <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:500;color:#808080;letter-spacing:0.04em;width:28%;">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style="border-bottom:0.5px solid rgba(0,0,0,0.08);">
-                      <td style="padding:12px 16px;color:#1c1c1e;vertical-align:middle;"><span style="font-weight:500;font-size:13px;">Salesforce</span></td>
-                      <td style="padding:12px 16px;color:#1c1c1e;vertical-align:middle;">
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                          <span style="font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:0.5px solid #AFA9EC;background:#EEEDFE;color:#4E008E;">Arabic</span>
-                          <span style="font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:0.5px solid #AFA9EC;background:#EEEDFE;color:#4E008E;">Japanese</span>
-                          <span style="font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:0.5px solid #AFA9EC;background:#EEEDFE;color:#4E008E;">Portuguese</span>
-                        </div>
-                      </td>
-                      <td style="padding:12px 16px;color:#1c1c1e;vertical-align:middle;"><span style="font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;background:#f2f2f2;color:#808080;border:0.5px solid rgba(0,0,0,0.12);">Pending</span></td>
-                    </tr>
-                    <tr>
-                      <td style="padding:12px 16px;color:#1c1c1e;vertical-align:middle;"><span style="font-weight:500;font-size:13px;">Logitech</span></td>
-                      <td style="padding:12px 16px;color:#1c1c1e;vertical-align:middle;">
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                          <span style="font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:0.5px solid #AFA9EC;background:#EEEDFE;color:#4E008E;">Arabic</span>
-                        </div>
-                      </td>
-                      <td style="padding:12px 16px;color:#1c1c1e;vertical-align:middle;"><span style="font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;background:#f2f2f2;color:#808080;border:0.5px solid rgba(0,0,0,0.12);">Pending</span></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- ── RESEARCH ── -->
     <div class="section-block" id="research">
       <p class="P-400-SP section-tag">Research</p>
-      <h1 class="H1-700">Align & Define</h1>
-
-      <!-- Previous vs New flow — text + image -->
-      <div class="two-col" style="margin-top: 0;">
-        <div>
-          <p class="P-400-SG">Align</p>
-          <h2 class="H2-600">Prioritizing languages by impact</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G" style="margin-bottom: 0.5rem;">I analyzed our top 10 client countries — looking at languages spoken, official secondary language.</p>
-            <p class="P-400-G">Working closely with the PM, we prioritized four additional languages: Spanish, French, German, and Arabic</p>
-          </div>
-          <div class="img-block" style="padding: 16px; overflow: hidden; background: #f8f8f8; aspect-ratio: 476 / 390.63; display: flex; flex-direction: column;">
-            <div style="flex: 1; min-height: 0; overflow: hidden; position: relative;">
-              <img src="forma_bubble_chart.gif" alt="Language prioritization bubble chart — user reach vs. number of Forma client countries" style="width: 100%; height: 100%; display: block; object-fit: contain;">
-              <!-- cover GIF's internal legend text at bottom -->
-              <div style="position:absolute;bottom:0;left:0;right:0;height:36px;background:#f8f8f8;"></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;font-size:11px;color:#808080;align-items:center;justify-content:center;flex-shrink:0;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,sans-serif;">
-              <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;background:#4E008E;"></span>Selected top 4 languages</span>
-              <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;background:#808080;"></span>Other languages</span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <p class="P-400-SG">Competitive analysis - Duolingo</p>
-          <h2 class="H2-600">Language selector: Before activation</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">The moment users land on the page, they can already choose their language. No login required</p>
-          </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo06. New Duolingo - Before activation.png" alt="Duolingo language selector before activation">
-          </div>
-        </div>
+      <h1 class="H1-700">Discovery</h1>
+      <div class="P-400-G section-body" style="margin-bottom:32px;">
+        <p class="P-400-G">I talked directly with drivers and riders to ground the design in real behavior and pain points</p>
       </div>
 
-      <!-- Competitive analysis Airbnb — text + image -->
-      <div class="two-col" style="margin-top: var(--space-7);">
-        <div>
-          <p class="P-400-SG">Competitive analysis - Airbnb</p>
-          <h2 class="H2-600">Language selector: Before login</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Accessible before login, always visible</p>
-          </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo07. New Airbnb (before login).png" alt="Airbnb language selector before login">
-          </div>
-        </div>
-        <div>
-          <p class="P-400-SG">Competitive analysis - Airbnb</p>
-          <h2 class="H2-600">Language selector: Post login</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Global Preferences section: Includes language, currency, and timezone in one place</p>
-          </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo08. New Airbnb (post login).png" alt="Airbnb language selector post login">
-          </div>
-        </div>
-      </div>
+      <div class="feat-cards-grid" style="margin-top: var(--space-4); grid-template-columns: repeat(2, 1fr);">
 
-      <!-- Redesigned the user journey -->
-      <div style="margin-top:var(--space-7); margin-bottom:var(--space-7);">
-        <h2 class="H2-600">Redesigned the user journey</h2>
-        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-          <p class="P-400-G">The language selector should appear at three key moments: Before account activation, post login, and the settings page</p>
+        <div class="feat-card">
+          <div class="feat-icon-wrap">
+            <img src="Empower Vid/Driver.png" alt="" style="width:40px; height:40px; object-fit:contain;">
+          </div>
+          <h3 class="H3-600" style="text-align:center; width:100%; margin-bottom:var(--space-1);">Drivers</h3>
+          <p class="P-400-G-List" style="text-align:center; width:100%; margin-bottom:0; color:#1c1c1e;">Tips and compensation matter to them</p>
         </div>
-        <div class="img-block">
-          <img src="Localization pics/Lo09. Redesigned the user journey.png" alt="Redesigned user journey — language selector touchpoints">
+
+        <div class="feat-card">
+          <div class="feat-icon-wrap">
+            <img src="Empower Vid/Rider.png" alt="" style="width:40px; height:40px; object-fit:contain;">
+          </div>
+          <h3 class="H3-600" style="text-align:center; width:100%; margin-bottom:var(--space-1);">Riders</h3>
+          <p class="P-400-G-List" style="text-align:center; width:100%; margin-bottom:0; color:#1c1c1e;">They wanted to tip or compensate but didn't know where, how much, or if it reached the driver</p>
         </div>
+
       </div>
     </div>
 
     <!-- ── SOLUTION ── -->
     <div class="section-block" id="solution">
       <p class="P-400-SP section-tag">Solution</p>
-      <h1 class="H1-700">Providing international users with access to their benefits in their own languages, currencies and cultural formats</h1>
-      <div class="P-400-G section-body">
-        <p class="P-400-G">We implemented 3 features for this challenge</p>
+      <h1 class="H1-700">How might we let riders thank or compensate drivers in a way that feels natural and visible inside the app?</h1>
+      <div class="P-400-G section-body" style="margin-bottom: var(--space-4);">
+        <ol style="padding-left: 1.25em; margin: 0;">
+          <li class="P-400-G" style="margin-bottom: var(--space-1);">A single, obvious entry from ride history</li>
+          <li class="P-400-G" style="margin-bottom: var(--space-1);">Clear breakdowns of fare, tip, and compensation</li>
+          <li class="P-400-G" style="margin-bottom: 0;">A brief riders/drivers thank-you message</li>
+        </ol>
       </div>
-      <div class="bento-grid">
 
-        <!-- Card 1: Multilingual support — full width -->
-        <a id="bento-card-1" class="bento-card bento-full" href="#feature-1">
-          <div class="bento-bg" style="background:#f8f8f8;">
-            <img src="Localization pics/Lo03. New Implemented multilingual support.png" alt="Implemented multilingual support">
-          </div>
-          <div class="bento-footer">
-            <div class="bento-footer-icon">
-              <svg id="bento-lang-svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path class="lang-path" d="m5 8 6 6"/>
-                <path class="lang-path" d="m4 14 6-6 3-3"/>
-                <path class="lang-path" d="M2 5h12"/>
-                <path class="lang-path" d="M7 2h1"/>
-                <path class="lang-path" d="m22 22-5-10-5 10"/>
-                <path class="lang-path" d="M14 18h6"/>
-              </svg>
-            </div>
-            <h3 class="H3-600">Implemented multilingual support</h3>
-            <p class="P-400-G">Let users access the platform in their preferred language</p>
-            <span class="P-400-SP bento-cta">View feature 1 →</span>
-          </div>
-        </a>
-
-        <!-- Card 2: Address input fields — wide -->
-        <a id="bento-card-2" class="bento-card bento-wide" href="#feature-2">
-          <div class="bento-bg">
-            <img src="Localization pics/Lo 04. Redesigned address input fields.png" alt="Redesigned address input fields">
-          </div>
-          <div class="bento-footer">
-            <div class="bento-footer-icon">
-              <svg id="bento-earth-svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path class="earth-path" d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/>
-                <path class="earth-path" d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17"/>
-                <path class="earth-path" d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/>
-                <circle class="earth-circle" cx="12" cy="12" r="10"/>
-              </svg>
-            </div>
-            <h3 class="H3-600">Redesigned address input fields</h3>
-            <p class="P-400-G">Supported local address formats</p>
-            <span class="P-400-SP bento-cta">View feature 2 →</span>
-          </div>
-        </a>
-
-        <!-- Card 3: Local currency display — wide -->
-        <a id="bento-card-3" class="bento-card bento-wide" href="#feature-3">
-          <div class="bento-bg">
-            <img src="Localization pics/Lo 05. Enabled local currency display.png" alt="Enabled local currency display">
-          </div>
-          <div class="bento-footer">
-            <div class="bento-footer-icon">
-              <svg id="bento-euro-svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path class="euro-path" d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/>
-                <path class="euro-path" d="M16 10h-12"/>
-                <path class="euro-path" d="M13 14h-9"/>
-              </svg>
-            </div>
-            <h3 class="H3-600">Enabled local currency display</h3>
-            <p class="P-400-G">Showed benefit amounts in the user's local currency automatically</p>
-            <span class="P-400-SP bento-cta">View feature 3 →</span>
-          </div>
-        </a>
-
+      <div style="margin-top:var(--space-4); margin-bottom:var(--space-7);">
+        <div class="img-block" style="background:#FFFFFF;">
+          <img src="Empower Vid/Em01. User Flow.png" alt="User Flow">
+        </div>
       </div>
     </div>
 
     <!-- ── FEATURE 1 ── -->
     <div class="section-block" id="feature-1">
       <p class="P-400-SP section-tag">Feature 1</p>
-      <h1 class="H1-700">Implemented multilingual support</h1>
-      <div class="P-400-G section-body" style="margin-bottom: var(--space-4);">
-        <p class="P-400-G">Let users access the platform in their preferred language</p>
-      </div>
+      <h1 class="H1-700">Completed ride tipping</h1>
+      <p class="P-400-B">For completed rides: I made it obvious how to thank your driver and to see that it went through</p>
+      <p class="P-400-G">I kept riders on the same screen with a clear "You tipped $X" state and showed fare + tip as one total in the list</p>
 
-      <!-- Feature 1 video — Safari frame (2350×1568 video) -->
-      <div class="feat1-scan" style="margin-bottom: var(--space-7);">
-        <div class="intro-safari">
-          <!-- Chrome bar -->
-          <div class="safari-chrome">
-            <div class="safari-lights">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="safari-url-wrap">
-              <div class="safari-url">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                client.joinforma.com
-              </div>
-            </div>
-          </div>
-          <!-- Video content -->
-          <div class="safari-video-wrap">
-            <video autoplay loop muted playsinline>
-              <source src="Localization Vids/On boarding- before activation.mov" type="video/quicktime">
-              <source src="Localization Vids/On boarding- before activation.mov" type="video/mp4">
-            </video>
-          </div>
-        </div>
-      </div>
-
-      <!-- Language support vs UI adaptation — text + image -->
-      <div class="two-col" style="margin-top: 0;">
-        <div>
-          <h2 class="H2-600">From components to platform</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G-List">Providing 4 additional languages: French, German, Spanish, Arabic</p>
-          </div>
-          <div class="img-block" style="background: #F8F8F8; padding: 32px; padding-top: 0; box-sizing: border-box; aspect-ratio: 1160/960; display: flex; align-items: center;">
-            <img src="Localization Vids/localization-slideshow.gif" alt="Localization languages slideshow" style="width: 100%; height: auto; display: block;">
-          </div>
-        </div>
-        <div>
-          <h2 class="H2-600">UI adaptation</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G-List">Adjusted interface for language-specific space requirements</p>
-          </div>
-          <div class="img-block" style="background: #F8F8F8; padding: 32px; box-sizing: border-box; aspect-ratio: 1160/960; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;">
-            <img src="Localization Vids/UI Adaptation.gif" alt="UI adaptation demo" style="width: 100%; height: auto; display: block;">
-            <p style="font-size: 0.8125rem; color: #808080; letter-spacing: 0.02em; line-height: 1.5; text-align: center; margin: 0;">German text can grow 30–50% longer than its English counterparts</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- QA & Cultural customization vs Language selector -->
-      <div class="two-col" style="margin-top: var(--space-7);">
-        <div>
-          <h2 class="H2-600">QA & Cultural customization</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Collaborated closely with development teams to ensure top-notch quality assurance</p>
-          </div>
-          <div class="img-block" style="flex: 1;">
-            <img src="Localization pics/Lo10. QA & Cultural customization.png" alt="QA and cultural customization" style="width: 100%; height: 100%; object-fit: cover;">
-          </div>
-        </div>
-        <div>
-          <h2 class="H2-600">Language selector - Onboarding</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">System detects the user's country and sets the language automatically</p>
-          </div>
-          <div class="img-block" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px;">
-            <div class="intro-safari" style="width: 100%; height: auto; max-width: 100%;">
-              <div class="safari-chrome">
-                <div class="safari-lights">
-                  <span></span><span></span><span></span>
-                </div>
-                <div class="safari-url-wrap">
-                  <div class="safari-url">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    client.joinforma.com
-                  </div>
-                </div>
-              </div>
-              <div class="safari-video-wrap">
-                <video autoplay loop muted playsinline>
-                  <source src="Localization Vids/On boarding- before activation.mov" type="video/quicktime">
-                  <source src="Localization Vids/On boarding- before activation.mov" type="video/mp4">
-                </video>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Language selector - Pre-login vs Settings -->
-      <div class="two-col" style="margin-top: var(--space-7);">
-        <div>
-          <h2 class="H2-600">Language selector - Pre-login</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">The language selector should live in a discoverable position</p>
-          </div>
-          <div class="img-block" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px;">
-            <div class="lo-vid02-safari" style="width: 100%; height: auto; max-width: 100%;">
-              <div class="safari-chrome">
-                <div class="safari-lights">
-                  <span></span><span></span><span></span>
-                </div>
-                <div class="safari-url-wrap">
-                  <div class="safari-url">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    client.joinforma.com
-                  </div>
-                </div>
-              </div>
-              <div class="safari-video-wrap">
-                <video autoplay loop muted playsinline>
-                  <source src="Localization Vids/LoVid02_Language selector- Before login.mov" type="video/quicktime">
-                  <source src="Localization Vids/LoVid02_Language selector- Before login.mov" type="video/mp4">
-                </video>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h2 class="H2-600">Language selector - Settings</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Persistent language selector within the account settings page</p>
-          </div>
-          <div class="img-block" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px;">
-            <div class="lo-vid03-safari" style="width: 100%; height: auto; max-width: 100%;">
-              <div class="safari-chrome">
-                <div class="safari-lights">
-                  <span></span><span></span><span></span>
-                </div>
-                <div class="safari-url-wrap">
-                  <div class="safari-url">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="11" width="18" height="11" rx="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    client.joinforma.com
-                  </div>
-                </div>
-              </div>
-              <div class="safari-video-wrap">
-                <video autoplay loop muted playsinline>
-                  <source src="Localization Vids/LoVid03_Settings.mov" type="video/quicktime">
-                  <source src="Localization Vids/LoVid03_Settings.mov" type="video/mp4">
-                </video>
-              </div>
-            </div>
-          </div>
+      <!-- Completed ride video block -->
+      <div style="display:flex; justify-content:center; margin-top: var(--space-4); margin-bottom: var(--space-7);">
+        <div style="width:72%; border-radius:16px; overflow:hidden; background:#F8F8F8; transform:translateZ(0); -webkit-transform:translateZ(0);">
+          <video autoplay loop muted playsinline style="width:100%; display:block; transform:scale(1.02); will-change:transform;">
+            <source src="Empower Vid/Cancelled.mp4" type="video/mp4">
+          </video>
         </div>
       </div>
     </div>
@@ -1632,101 +1385,16 @@
     <!-- ── FEATURE 2 ── -->
     <div class="section-block" id="feature-2">
       <p class="P-400-SP section-tag">Feature 2</p>
-      <h1 class="H1-700">Redesigned address input fields</h1>
-      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-        <p class="P-400-G">Use the selected country to drive the entire form structure dynamically and supported local address formats</p>
-      </div>
+      <h1 class="H1-700">Cancelled ride compensation</h1>
+      <p class="P-400-B">For cancelled rides: I took the confusion out of compensating drivers after rides being cancelled</p>
+      <p class="P-400-G">I added a dedicated "Compensate Driver" flow with a visible breakdown, a clear "You compensated $X" confirmation on the same screen, and list totals that show base + sent so riders always see what's owed</p>
 
-      <!-- Feature 2 video — Safari frame -->
-      <div style="background:#f8f8f8; margin-bottom:var(--space-7);">
-        <div class="feat1-scan" style="margin-bottom:0;">
-          <div class="feat2-safari">
-            <!-- Chrome bar -->
-            <div class="safari-chrome">
-              <div class="safari-lights">
-                <span></span><span></span><span></span>
-              </div>
-              <div class="safari-url-wrap">
-                <div class="safari-url">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                  client.joinforma.com
-                </div>
-              </div>
-            </div>
-            <!-- GIF content with play/pause -->
-            <div class="safari-video-wrap" style="position:relative;">
-              <img id="feat2-gif" src="Localization Vids/LoVid04_Redesigned address input fields.gif" alt="Redesigned address input fields demo" style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;">
-              <canvas id="feat2-canvas" style="display:none;width:100%;height:100%;object-fit:cover;object-position:top center;position:absolute;inset:0;"></canvas>
-              <button id="feat2-playpause" onclick="toggleFeat2GIF()" style="position:absolute;bottom:16px;right:16px;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.55);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:background 0.2s;" onmouseenter="this.style.background='rgba(0,0,0,0.75)'" onmouseleave="this.style.background='rgba(0,0,0,0.55)'">
-                <svg id="feat2-icon-pause" viewBox="0 0 24 24" fill="white" width="16" height="16"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                <svg id="feat2-icon-play" viewBox="0 0 24 24" fill="white" width="16" height="16" style="display:none;"><polygon points="5,3 19,12 5,21"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-        <!-- GIF caption -->
-        <div style="padding:var(--space-4) var(--space-4) var(--space-4); display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
-          <p class="P-400-SG" style="margin-bottom:0;"><span style="color:#1c1c1e;font-weight:500;">US:</span> State (dropdown), ZIP code</p>
-          <p class="P-400-SG" style="margin-bottom:0;"><span style="color:#1c1c1e;font-weight:500;">Other countries:</span> State (optional), Postal code</p>
-        </div>
-      </div>
-      <script>
-        (function(){
-          var gif = document.getElementById('feat2-gif');
-          var canvas = document.getElementById('feat2-canvas');
-          var iconPause = document.getElementById('feat2-icon-pause');
-          var iconPlay = document.getElementById('feat2-icon-play');
-          var playing = true;
-          window.toggleFeat2GIF = function() {
-            if (playing) {
-              // Capture current frame
-              canvas.width = gif.naturalWidth || gif.offsetWidth;
-              canvas.height = gif.naturalHeight || gif.offsetHeight;
-              canvas.getContext('2d').drawImage(gif, 0, 0);
-              gif.style.display = 'none';
-              canvas.style.display = 'block';
-              iconPause.style.display = 'none';
-              iconPlay.style.display = 'block';
-              playing = false;
-            } else {
-              // Restart GIF
-              var src = gif.src;
-              gif.src = '';
-              gif.src = src;
-              canvas.style.display = 'none';
-              gif.style.display = 'block';
-              iconPause.style.display = 'block';
-              iconPlay.style.display = 'none';
-              playing = true;
-            }
-          };
-        })();
-      </script>
-
-      <!-- Expiring alerts + Expiration banner -->
-      <div class="two-col" style="margin-top:0;">
-        <div>
-          <p class="P-400-SG" style="margin-bottom:var(--space-1);">Previous</p>
-          <h2 class="H2-600">U.S.-centered address formatting</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">It assumed a US address structure by default, for every user in every country</p>
-          </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo11. U.S.-centered address formatting.png" alt="U.S.-centered address formatting">
-          </div>
-        </div>
-        <div>
-          <p class="P-400-SG" style="margin-bottom:var(--space-1);">New</p>
-          <h2 class="H2-600">Dynamic address formatting</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">I expanded address fields to accommodate variable content length across languages</p>
-          </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo12. Dynamic address formatting.png" alt="Dynamic address formatting">
-          </div>
+      <!-- Completed video block -->
+      <div style="display:flex; justify-content:center; margin-top: var(--space-4); margin-bottom: var(--space-7);">
+        <div style="width:72%; border-radius:16px; overflow:hidden; background:#F8F8F8; transform:translateZ(0); -webkit-transform:translateZ(0);">
+          <video autoplay loop muted playsinline style="width:100%; display:block; transform:scale(1.02); will-change:transform;">
+            <source src="Empower Vid/Completed.mp4" type="video/mp4">
+          </video>
         </div>
       </div>
     </div>
@@ -1734,158 +1402,68 @@
     <!-- ── FEATURE 3 ── -->
     <div class="section-block" id="feature-3">
       <p class="P-400-SP section-tag">Feature 3</p>
+      <h1 class="H1-700">Thank you message</h1>
+      <p class="P-400-B">After tips &amp; compensations: A clear moment of closure after every tip or compensation</p>
 
-      <!-- Enable automatic local currency display -->
-      <div style="margin-bottom:var(--space-7);">
-        <h1 class="H1-700">Enable automatic local currency display</h1>
-        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-          <p class="P-400-G">Tied directly to where the employee works, pulled from the employee profile configured by the company's HR admin</p>
-        </div>
-        <div class="img-block">
-          <img src="Localization pics/Lo13. Enable automatic local currency display.png" alt="Enable automatic local currency display">
-        </div>
-      </div>
-
-      <!-- Manual override — currency settings -->
-      <div style="margin-top:var(--space-7); margin-bottom:var(--space-7);">
-        <h2 class="H2-600">Manual override — currency settings</h2>
-        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-          <p class="P-400-G">Employees working across multiple countries can always override it in their account settings</p>
-        </div>
-        <div class="img-block">
-          <img src="Localization pics/Lo14. Currency settings.png" alt="Currency settings">
+      <!-- Thank you video block -->
+      <div style="display:flex; justify-content:center; margin-top: var(--space-4); margin-bottom: var(--space-7);">
+        <div style="width:72%; border-radius:16px; overflow:hidden; background:#F8F8F8; transform:translateZ(0); -webkit-transform:translateZ(0);">
+          <video autoplay loop muted playsinline style="width:100%; display:block; transform:scale(1.02); will-change:transform;">
+            <source src="Empower Vid/Thnak you.mp4" type="video/mp4">
+          </video>
         </div>
       </div>
     </div>
 
     <!-- ── OUTCOMES ── -->
     <div class="section-block" id="outcomes">
-      <p class="P-400-SP section-tag">Outcomes</p>
-      <h1 class="H1-700">Achievements</h1>
-      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-        <p class="P-400-G">After these features launched, here are some outcomes we have achieved</p>
-      </div>
+      <p class="P-400-SP section-tag">Next steps</p>
+      <h1 class="H1-700">Suggested next steps</h1>
       <div class="outcomes-grid">
 
-        <!-- Card 1: $1M -->
-        <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-          <div style="margin-bottom:16px;">
-            <img src="Localization pics/Money.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+        <!-- Card 1: HandCoins - Align on compensation rules -->
+        <div class="feat-card hand-coin-card" style="background:#F1EBF6; border:1px solid rgba(209,213,219,0.5); align-items:center; text-align:center;">
+          <div class="feat-icon-wrap" style="margin-bottom:16px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/>
+              <path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/>
+              <path d="m2 16 6 6"/>
+              <circle class="hand-coin-c1" cx="16" cy="9" r="2.9"/>
+              <circle class="hand-coin-c2" cx="6" cy="5" r="3"/>
+            </svg>
           </div>
-          <h2 class="H2-600" style="margin-bottom:var(--space-05);">$1M</h2>
-          <p class="P-400-B" style="margin-bottom:0;">New revenue through increased engagement</p>
+          <p class="P-400-G-List" style="margin-bottom:0; color:#1c1c1e;">Align on compensation rules</p>
         </div>
 
-        <!-- Card 2: 13+ -->
-        <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-          <div style="margin-bottom:16px;">
-            <img src="Localization pics/Company.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+        <!-- Card 2: ChessKnight - Determine roadmap priority -->
+        <div class="feat-card chess-knight-card" style="background:#F1EBF6; border:1px solid rgba(209,213,219,0.5); align-items:center; text-align:center;">
+          <div class="feat-icon-wrap" style="margin-bottom:16px;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible;">
+              <g class="chess-knight-g">
+                <path d="M5 20a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/>
+                <path d="M16.5 18c1-2 2.5-5 2.5-9a7 7 0 0 0-7-7H6.635a1 1 0 0 0-.768 1.64L7 5l-2.32 5.802a2 2 0 0 0 .95 2.526l2.87 1.456"/>
+                <path d="m15 5 1.425-1.425"/>
+                <path d="m17 8 1.53-1.53"/>
+                <path d="M9.713 12.185 7 18"/>
+              </g>
+            </svg>
           </div>
-          <h2 class="H2-600" style="margin-bottom:var(--space-05);">13+</h2>
-          <p class="P-400-B" style="margin-bottom:0;">Major companies adopted localization within the first launch cycle</p>
+          <p class="P-400-G-List" style="margin-bottom:0; color:#1c1c1e;">Determine roadmap priority and rollout strategy</p>
         </div>
 
-        <!-- Card 3: $200M -->
-        <div style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-          <div style="margin-bottom:16px;">
-            <img src="Localization pics/Money.png" alt="" style="width:48px; height:48px; object-fit:contain; display:block;">
+        <!-- Card 3: Laugh - Test rider adoption -->
+        <div class="feat-card laugh-card" style="background:#F1EBF6; border:1px solid rgba(209,213,219,0.5); align-items:center; text-align:center;">
+          <div class="feat-icon-wrap" style="margin-bottom:16px;">
+            <svg class="laugh-svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path class="laugh-mouth" d="M18 13a6 6 0 0 1-6 5 6 6 0 0 1-6-5h12Z"/>
+              <line class="laugh-eye" x1="9" x2="9.01" y1="9" y2="9"/>
+              <line class="laugh-eye" x1="15" x2="15.01" y1="9" y2="9"/>
+            </svg>
           </div>
-          <h2 class="H2-600" style="margin-bottom:var(--space-05);">$200M</h2>
-          <p class="P-400-B" style="margin-bottom:0;">TAM unlocked by expanding global accessibility</p>
+          <p class="P-400-G-List" style="margin-bottom:0; color:#1c1c1e;">Test rider adoption and measure driver satisfaction impact</p>
         </div>
 
-      </div>
-    </div>
-
-    <!-- ── REFLECTION ── -->
-    <div class="section-block" id="reflection-ai">
-      <p class="P-400-SP section-tag">Constraint</p>
-      <h1 class="H1-700">Language selector (before login) deprioritized</h1>
-      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-        <p class="P-400-G">One of the Language selector feature was planned, but it had been deprioritized due to the scope constraints</p>
-      </div>
-
-      <div style="margin-top:var(--space-4); margin-bottom:var(--space-7);">
-        <div class="img-block">
-          <img src="Localization pics/Lo09-Lo15-transition.gif" alt="Language selector before login — deprioritized feature">
-        </div>
-      </div>
-
-
-
-      <!-- Navigated constraints -->
-      <div style="margin-bottom:var(--space-7);">
-        <h2 class="H2-600">Navigated constraints</h2>
-        <p class="P-400-G" style="margin-bottom:var(--space-3);">After a discussion with the design lead, I did 2 actions:</p>
-        <div class="feat-cards-grid" style="margin-top:var(--space-4); grid-template-columns: repeat(2, 1fr);">
-
-          <!-- Card 1: Gathered data -->
-          <div class="feat-card annoyed-card" id="new-card-1">
-            <div class="feat-icon-wrap">
-              <svg class="annoyed-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path class="annoyed-mouth" d="M8 15h8"/>
-                <path class="annoyed-eyebrow-l" d="M8 9h2"/>
-                <path class="annoyed-eyebrow-r" d="M14 9h2"/>
-              </svg>
-            </div>
-            <h3 class="H3-600" style="text-align:center; width:100%; margin-bottom:var(--space-1);">Gathered data</h3>
-            <p class="P-400-B" style="text-align:center; width:100%; margin-bottom:0;">Proving its impact on accessibility</p>
-          </div>
-
-          <!-- Card 2: Post-launch improvement -->
-          <div class="feat-card rocket-card" id="new-card-2">
-            <div class="feat-icon-wrap">
-              <svg class="rocket-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path class="rocket-fire" d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
-                <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
-                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
-                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
-              </svg>
-            </div>
-            <h3 class="H3-600" style="text-align:center; width:100%; margin-bottom:var(--space-1);">Negotiated with PM</h3>
-            <p class="P-400-B" style="text-align:center; width:100%; margin-bottom:0;">To include this feature as a post-launch improvement</p>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Results -->
-      <div>
-        <h2 class="H2-600">Results</h2>
-        <div class="outcomes-grid" style="grid-template-columns: repeat(2, 1fr);">
-
-          <!-- Card 2: Language selector launched (swapped to position 1) -->
-          <div class="result-card smile-card" style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-            <div class="feat-icon-wrap" style="margin-bottom:16px;">
-              <svg class="smile-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11v1a10 10 0 1 1-9-10"/>
-                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                <line x1="9" x2="9.01" y1="9" y2="9"/>
-                <line x1="15" x2="15.01" y1="9" y2="9"/>
-                <path class="smile-plus" d="M16 5h6"/>
-                <path class="smile-plus" d="M19 2v6"/>
-              </svg>
-            </div>
-            <h3 class="H3-600" style="margin-bottom:var(--space-1);">For users</h3>
-            <p class="P-400-B" style="margin-bottom:0;">Language selector was successfully launched</p>
-          </div>
-
-          <!-- Card 1: Launched on schedule (swapped to position 2) -->
-          <div class="result-card monitor-card" style="position:relative; border-radius:16px; border:1px solid rgba(209,213,219,0.5); background:#F1EBF6; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-            <div class="feat-icon-wrap" style="margin-bottom:16px;">
-              <svg class="monitor-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect height="14" rx="2" width="20" x="2" y="3"/>
-                <path d="M12 17v4"/>
-                <path d="M8 21h8"/>
-                <path class="monitor-check" d="m9 10 2 2 4-4"/>
-              </svg>
-            </div>
-            <h3 class="H3-600" style="margin-bottom:var(--space-1);">For business</h3>
-            <p class="P-400-B" style="margin-bottom:0;">Launched localization on schedule</p>
-          </div>
-
-        </div>
       </div>
     </div>
 
@@ -2353,14 +1931,14 @@
     justify-content: center;
   }
   .footer-brand-icon img {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
   }
   .footer-brand-name {
     font-family: 'OggLocal', 'Ogg', 'Cormorant Garamond', Georgia, serif;
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 600;
     font-style: normal;
     letter-spacing: -0.03em;
     color: #4E008E;
