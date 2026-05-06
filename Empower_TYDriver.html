@@ -7,6 +7,13 @@
   <link rel="icon" type="image/png" href="Portfoilo%20assets/Purple flower.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <style>
+    @font-face {
+      font-family: 'OggLocal';
+      src: url('Portfoilo assets/OggText-ExtraboldItalic-BF646c18fc22d99.otf') format('opentype');
+      font-weight: 400 900;
+      font-style: italic normal;
+      font-display: swap;
+    }
     :root {
       /* ── DESIGN SYSTEM TOKENS ── */
       --bg:               #ffffff;
@@ -1368,15 +1375,15 @@
     <!-- ── FEATURE 1 ── -->
     <div class="section-block" id="feature-1">
       <p class="P-400-SP section-tag">Feature 1</p>
-      <h1 class="H1-700">Completed ride tipping</h1>
-      <p class="P-400-B">For completed rides: I made it obvious how to thank your driver and to see that it went through</p>
-      <p class="P-400-G">I kept riders on the same screen with a clear "You tipped $X" state and showed fare + tip as one total in the list</p>
+      <h1 class="H1-700">Cancelled ride compensation</h1>
+      <p class="P-400-B">For cancelled rides: I took the confusion out of compensating drivers after rides being cancelled</p>
+      <p class="P-400-G">I added a dedicated "Compensate Driver" flow with a visible breakdown, a clear "You compensated $X" confirmation on the same screen, and list totals that show base + sent so riders always see what's owed</p>
 
-      <!-- Completed ride video block -->
+      <!-- Cancelled ride video block -->
       <div style="display:flex; justify-content:center; margin-top: var(--space-4); margin-bottom: var(--space-7);">
         <div style="width:72%; border-radius:16px; overflow:hidden; background:#F8F8F8; transform:translateZ(0); -webkit-transform:translateZ(0);">
           <video autoplay loop muted playsinline style="width:100%; display:block; transform:scale(1.02); will-change:transform;">
-            <source src="Empower Vid/Cancelled.mp4" type="video/mp4">
+            <source src="https://pub-a4bbb839cc8f41d6a4daf0dc95ce51c0.r2.dev/Cancelled.mp4" type="video/mp4">
           </video>
         </div>
       </div>
@@ -1385,15 +1392,15 @@
     <!-- ── FEATURE 2 ── -->
     <div class="section-block" id="feature-2">
       <p class="P-400-SP section-tag">Feature 2</p>
-      <h1 class="H1-700">Cancelled ride compensation</h1>
-      <p class="P-400-B">For cancelled rides: I took the confusion out of compensating drivers after rides being cancelled</p>
-      <p class="P-400-G">I added a dedicated "Compensate Driver" flow with a visible breakdown, a clear "You compensated $X" confirmation on the same screen, and list totals that show base + sent so riders always see what's owed</p>
+      <h1 class="H1-700">Completed ride tipping</h1>
+      <p class="P-400-B">For completed rides: I made it obvious how to thank your driver and to see that it went through</p>
+      <p class="P-400-G">I kept riders on the same screen with a clear "You tipped $X" state and showed fare + tip as one total in the list</p>
 
-      <!-- Completed video block -->
+      <!-- Completed ride video block -->
       <div style="display:flex; justify-content:center; margin-top: var(--space-4); margin-bottom: var(--space-7);">
         <div style="width:72%; border-radius:16px; overflow:hidden; background:#F8F8F8; transform:translateZ(0); -webkit-transform:translateZ(0);">
           <video autoplay loop muted playsinline style="width:100%; display:block; transform:scale(1.02); will-change:transform;">
-            <source src="Empower Vid/Completed.mp4" type="video/mp4">
+            <source src="https://pub-a4bbb839cc8f41d6a4daf0dc95ce51c0.r2.dev/Completed.mp4" type="video/mp4">
           </video>
         </div>
       </div>
@@ -1409,7 +1416,7 @@
       <div style="display:flex; justify-content:center; margin-top: var(--space-4); margin-bottom: var(--space-7);">
         <div style="width:72%; border-radius:16px; overflow:hidden; background:#F8F8F8; transform:translateZ(0); -webkit-transform:translateZ(0);">
           <video autoplay loop muted playsinline style="width:100%; display:block; transform:scale(1.02); will-change:transform;">
-            <source src="Empower Vid/Thnak you.mp4" type="video/mp4">
+            <source src="https://pub-a4bbb839cc8f41d6a4daf0dc95ce51c0.r2.dev/Thnak%20you.mp4" type="video/mp4">
           </video>
         </div>
       </div>
@@ -1938,7 +1945,7 @@
   .footer-brand-name {
     font-family: 'OggLocal', 'Ogg', 'Cormorant Garamond', Georgia, serif;
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 800;
     font-style: normal;
     letter-spacing: -0.03em;
     color: #4E008E;
