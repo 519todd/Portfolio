@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Empower TYDriver · Todd Wu</title>
-  <link rel="icon" type="image/png" href="Portfoilo%20assets/Purple flower.png">
+  <link id="favicon" rel="icon" type="image/png" href="Portfoilo%20assets/Purple flower.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <style>
     @font-face {
@@ -2068,5 +2068,31 @@
   </div>
 </footer>
 
+<script>
+  (function () {
+    const img = new Image();
+    img.src = 'Portfoilo%20assets/Purple flower.png';
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    const favicon = document.getElementById('favicon');
+    let angle = 0;
+    img.onload = function () {
+      (function tick() {
+        angle += 0.015;
+        ctx.clearRect(0, 0, 32, 32);
+        ctx.save();
+        ctx.translate(16, 16);
+        ctx.rotate(angle);
+        const s = 32 * (1 / Math.SQRT2);
+        ctx.drawImage(img, -s / 2, -s / 2, s, s);
+        ctx.restore();
+        favicon.href = canvas.toDataURL('image/png');
+        requestAnimationFrame(tick);
+      })();
+    };
+  })();
+</script>
 </body>
 </html>
