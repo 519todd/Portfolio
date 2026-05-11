@@ -1449,62 +1449,67 @@
       <p class="P-400-SP section-tag">Research</p>
       <h1 class="H1-700">Align & Define</h1>
 
-      <!-- Previous vs New flow — text + image -->
-      <div class="two-col" style="margin-top: 0;">
-        <div>
-          <p class="P-400-SG">Align</p>
-          <h2 class="H2-600">Prioritizing languages by impact</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G" style="margin-bottom: 0.5rem;">I analyzed our top 10 client countries — looking at languages spoken, official secondary language.</p>
-            <p class="P-400-G">Working closely with the PM, we prioritized four additional languages: Spanish, French, German, and Arabic</p>
-          </div>
-          <div class="img-block" style="padding: 16px; overflow: hidden; background: #f8f8f8; aspect-ratio: 476 / 390.63; display: flex; flex-direction: column;">
-            <div style="flex: 1; min-height: 0; overflow: hidden; position: relative;">
-              <img src="forma_bubble_chart.gif" alt="Language prioritization bubble chart — user reach vs. number of Forma client countries" style="width: 100%; height: 100%; display: block; object-fit: contain;">
-              <!-- cover GIF's internal legend text at bottom -->
-              <div style="position:absolute;bottom:0;left:0;right:0;height:36px;background:#f8f8f8;"></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;font-size:11px;color:#808080;align-items:center;justify-content:center;flex-shrink:0;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,sans-serif;">
-              <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;background:#4E008E;"></span>Selected top 4 languages</span>
-              <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;background:#808080;"></span>Other languages</span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <p class="P-400-SG">Competitive analysis - Duolingo</p>
-          <h2 class="H2-600">Language selector: Before activation</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">The moment users land on the page, they can already choose their language. No login required</p>
-          </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo06. New Duolingo - Before activation.png" alt="Duolingo language selector before activation">
-          </div>
-        </div>
-      </div>
+      <!-- Research carousel — 4 cards -->
+      <div class="carousel-wrap" id="research-carousel" style="margin-top:0;">
+        <div class="carousel-track" id="research-track">
 
-      <!-- Competitive analysis Airbnb — text + image -->
-      <div class="two-col" style="margin-top: var(--space-7);">
-        <div>
-          <p class="P-400-SG">Competitive analysis - Airbnb</p>
-          <h2 class="H2-600">Language selector: Before login</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Accessible before login, always visible</p>
+          <!-- Slide 1: Align -->
+          <div class="carousel-slide" style="background:#ffffff; border-radius:16px; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="padding:32px 32px 24px; background:#ffffff;">
+              <p class="P-400-SG" style="margin-bottom:var(--space-1);">Align</p>
+              <h2 class="H2-600">Prioritizing languages by impact</h2>
+              <p class="P-400-G" style="margin-bottom:0.5rem;">I analyzed our top 10 client countries — looking at languages spoken, official secondary language.</p>
+              <p class="P-400-G" style="margin-bottom:0;">Working closely with the PM, we prioritized four additional languages: Spanish, French, German, and Arabic</p>
+            </div>
+            <div style="background:#f8f8f8; padding:16px; position:relative;">
+              <img src="forma_bubble_chart.gif" alt="Language prioritization bubble chart" style="width:100%;display:block;">
+              <div style="position:absolute;bottom:16px;left:0;right:0;height:36px;background:#f8f8f8;"></div>
+              <div style="display:flex;gap:8px;margin-top:10px;font-size:11px;color:#808080;align-items:center;justify-content:center;font-family:-apple-system,'SF Pro Text',BlinkMacSystemFont,sans-serif;">
+                <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;background:#4E008E;"></span>Selected top 4 languages</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;background:#808080;"></span>Other languages</span>
+              </div>
+            </div>
           </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo07. New Airbnb (before login).png" alt="Airbnb language selector before login">
+
+          <!-- Slide 2: Duolingo -->
+          <div class="carousel-slide" style="background:#ffffff; border-radius:16px; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="padding:32px 32px 24px; background:#ffffff;">
+              <p class="P-400-SG" style="margin-bottom:var(--space-1);">Competitive analysis - Duolingo</p>
+              <h2 class="H2-600">Language selector: Before activation</h2>
+              <p class="P-400-G" style="margin-bottom:0;">The moment users land on the page, they can already choose their language. No login required</p>
+            </div>
+            <div style="background:#f8f8f8;">
+              <img src="Localization pics/Lo06. New Duolingo - Before activation.png" alt="Duolingo language selector before activation" style="width:100%;display:block;">
+            </div>
           </div>
-        </div>
-        <div>
-          <p class="P-400-SG">Competitive analysis - Airbnb</p>
-          <h2 class="H2-600">Language selector: Post login</h2>
-          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Global Preferences section: Includes language, currency, and timezone in one place</p>
+
+          <!-- Slide 3: Airbnb before login -->
+          <div class="carousel-slide" style="background:#ffffff; border-radius:16px; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="padding:32px 32px 24px; background:#ffffff;">
+              <p class="P-400-SG" style="margin-bottom:var(--space-1);">Competitive analysis - Airbnb</p>
+              <h2 class="H2-600">Language selector: Before login</h2>
+              <p class="P-400-G" style="margin-bottom:0;">Accessible before login, always visible</p>
+            </div>
+            <div style="background:#f8f8f8;">
+              <img src="Localization pics/Lo07. New Airbnb (before login).png" alt="Airbnb language selector before login" style="width:100%;display:block;">
+            </div>
           </div>
-          <div class="img-block">
-            <img src="Localization pics/Lo08. New Airbnb (post login).png" alt="Airbnb language selector post login">
+
+          <!-- Slide 4: Airbnb post login -->
+          <div class="carousel-slide" style="background:#ffffff; border-radius:16px; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="padding:32px 32px 24px; background:#ffffff;">
+              <p class="P-400-SG" style="margin-bottom:var(--space-1);">Competitive analysis - Airbnb</p>
+              <h2 class="H2-600">Language selector: Post login</h2>
+              <p class="P-400-G" style="margin-bottom:0;">Global Preferences section: Includes language, currency, and timezone in one place</p>
+            </div>
+            <div style="background:#f8f8f8;">
+              <img src="Localization pics/Lo08. New Airbnb (post login).png" alt="Airbnb language selector post login" style="width:100%;display:block;">
+            </div>
           </div>
+
         </div>
       </div>
+      <div class="carousel-dots" id="research-dots" style="margin-bottom:var(--space-7);"></div>
 
       <!-- Redesigned the user journey -->
       <div style="margin-top:var(--space-7); margin-bottom:var(--space-7);">
@@ -1777,6 +1782,28 @@
           </div>
         </div>
       </div>
+
+      <!-- Address format evolution carousel -->
+      <div style="margin-top:var(--space-7);">
+        <h2 class="H2-600">From rigid to dynamic: How this project changed Forma's address logic permanently</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">We let the selected country drive the entire form structure dynamically<br>This approach became the foundation for all address inputs across Forma going forward</p>
+        </div>
+        <div class="carousel-wrap" id="addr-format-carousel">
+          <div class="carousel-track" id="addr-format-track">
+            <div class="carousel-slide">
+              <img src="Localization pics/Lo16. Forma address format V1.png" alt="Forma address format V1">
+            </div>
+            <div class="carousel-slide">
+              <img src="Localization pics/Lo17. Forma address format V2.png" alt="Forma address format V2">
+            </div>
+            <div class="carousel-slide">
+              <img src="Localization pics/Lo18. Forma address format V3.png" alt="Forma address format V3">
+            </div>
+          </div>
+        </div>
+        <div class="carousel-dots" id="addr-format-dots"></div>
+      </div>
     </div>
 
     <!-- ── FEATURE 3 ── -->
@@ -1996,6 +2023,140 @@
         ticking = false;
       });
     }, { passive: true });
+  })();
+
+  // ── Research carousel ──
+  (function() {
+    const container  = document.getElementById('research-carousel');
+    const track      = document.getElementById('research-track');
+    const dotsWrap   = document.getElementById('research-dots');
+    if (!container || !track || !dotsWrap) return;
+    const slides     = Array.from(track.children);
+    const GAP        = 16;
+    const SLIDE_RATIO = 0.875;
+
+    let current = 0;
+    let slideWidth = 0;
+
+    slides.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+      btn.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(btn);
+    });
+
+    const dots = Array.from(dotsWrap.children);
+
+    function init() {
+      const cw = container.offsetWidth;
+      slideWidth = cw >= 840 ? 840 : cw * SLIDE_RATIO;
+      slides.forEach(s => { s.style.width = slideWidth + 'px'; });
+      goTo(current, false);
+    }
+
+    function goTo(n, animate) {
+      if (animate === undefined) animate = true;
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      const cw = container.offsetWidth;
+      let offset;
+      if (current === 0) {
+        offset = 0;
+      } else if (current === slides.length - 1) {
+        offset = cw - slideWidth;
+      } else {
+        offset = (cw - slideWidth) / 2;
+      }
+      const x = -(current * (slideWidth + GAP)) + offset;
+      if (!animate) {
+        track.style.transition = 'none';
+        track.style.transform  = 'translateX(' + x + 'px)';
+        track.offsetHeight;
+        track.style.transition = '';
+      } else {
+        track.style.transform = 'translateX(' + x + 'px)';
+      }
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    let touchStartX = 0, touchDeltaX = 0;
+    container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    container.addEventListener('touchmove',  e => { touchDeltaX = e.touches[0].clientX - touchStartX; }, { passive: true });
+    container.addEventListener('touchend',   () => {
+      if (Math.abs(touchDeltaX) > 40) touchDeltaX < 0 ? goTo(current + 1) : goTo(current - 1);
+      touchDeltaX = 0;
+    });
+
+    const ro = new ResizeObserver(init);
+    ro.observe(container);
+    init();
+  })();
+
+  // ── Address format carousel ──
+  (function() {
+    const container  = document.getElementById('addr-format-carousel');
+    const track      = document.getElementById('addr-format-track');
+    const dotsWrap   = document.getElementById('addr-format-dots');
+    if (!container || !track || !dotsWrap) return;
+    const slides     = Array.from(track.children);
+    const GAP        = 16;
+    const SLIDE_RATIO = 0.875;
+
+    let current = 0;
+    let slideWidth = 0;
+
+    slides.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+      btn.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(btn);
+    });
+
+    const dots = Array.from(dotsWrap.children);
+
+    function init() {
+      const cw = container.offsetWidth;
+      slideWidth = cw >= 840 ? 840 : cw * SLIDE_RATIO;
+      slides.forEach(s => { s.style.width = slideWidth + 'px'; });
+      goTo(current, false);
+    }
+
+    function goTo(n, animate) {
+      if (animate === undefined) animate = true;
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      const cw = container.offsetWidth;
+      let offset;
+      if (current === 0) {
+        offset = 0;
+      } else if (current === slides.length - 1) {
+        offset = cw - slideWidth;
+      } else {
+        offset = (cw - slideWidth) / 2;
+      }
+      const x = -(current * (slideWidth + GAP)) + offset;
+      if (!animate) {
+        track.style.transition = 'none';
+        track.style.transform  = 'translateX(' + x + 'px)';
+        track.offsetHeight;
+        track.style.transition = '';
+      } else {
+        track.style.transform = 'translateX(' + x + 'px)';
+      }
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    let touchStartX = 0, touchDeltaX = 0;
+    container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    container.addEventListener('touchmove',  e => { touchDeltaX = e.touches[0].clientX - touchStartX; }, { passive: true });
+    container.addEventListener('touchend',   () => {
+      if (Math.abs(touchDeltaX) > 40) touchDeltaX < 0 ? goTo(current + 1) : goTo(current - 1);
+      touchDeltaX = 0;
+    });
+
+    const ro = new ResizeObserver(init);
+    ro.observe(container);
+    init();
   })();
 
   // ── 3-modes iframe auto-resize ──
