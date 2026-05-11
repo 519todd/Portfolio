@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @font-face {
+      font-family: 'OggLocal';
+      src: url('Portfoilo assets/OggText-ExtraboldItalic-BF646c18fc22d99.otf') format('opentype');
+      font-weight: 800;
+      font-style: italic;
+    }
+    html, body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+    }
+    .og {
+      width: 1200px;
+      height: 630px;
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      background: #ffffff;
+    }
+    .og-left {
+      padding: 72px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #ffffff;
+    }
+    .og-eyebrow {
+      font-family: -apple-system, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #4E008E;
+      opacity: 0.7;
+    }
+    .og-name {
+      font-family: 'OggLocal', Georgia, serif;
+      font-style: italic;
+      font-weight: 800;
+      font-size: 140px;
+      letter-spacing: -0.03em;
+      line-height: 0.92;
+      color: #4E008E;
+    }
+    .og-tagline {
+      font-family: -apple-system, sans-serif;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: #58534D;
+      max-width: 480px;
+    }
+    .og-url {
+      font-family: -apple-system, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: #aeaeb2;
+      text-transform: uppercase;
+    }
+    .og-right {
+      background: #ffffff;
+      border-left: 1px solid rgba(78,0,142,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .og-flower {
+      width: 182px;
+      height: 182px;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 48px rgba(78,0,142,0.15));
+    }
+  </style>
+</head>
+<body>
+  <div class="og">
+    <div class="og-left">
+      <span class="og-eyebrow">Portfolio</span>
+      <div class="og-name">Todd<br>Wu</div>
+      <p class="og-tagline">Designing for the craft.<br>Building for the people.</p>
+      <span class="og-url">toddwu.com</span>
+    </div>
+    <div class="og-right">
+      <img class="og-flower" src="Portfoilo assets/Purple flower.png" alt="">
+    </div>
+  </div>
+</body>
+</html>

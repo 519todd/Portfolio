@@ -1121,7 +1121,7 @@
       <p class="P-400-SP section-tag">Challenge</p>
       <h1 class="H1-700">When claiming becomes a chore</h1>
       <div class="P-400-G section-body">
-        <p class="P-400-G">Users struggled with unclear benefit eligibility, and time-consuming manual claiming processes.</p>
+        <p class="P-400-G">Remote user testing and support ticket analysis revealed three barriers: unclear benefit eligibility, time-consuming manual claims, and difficulty discovering eligible items in the Forma Store</p>
       </div>
 
       <div class="feat-cards-grid" style="margin-top: var(--space-4);">
@@ -1154,7 +1154,7 @@
           <p class="P-400-SG">User Problem</p>
           <h2 class="H2-600">Benefits went unclaimed</h2>
           <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">Users frequently left their benefits unclaimed due to a high-friction, time-consuming process.</p>
+            <p class="P-400-G">Users frequently left their benefits unclaimed due to a high-friction, time-consuming process</p>
           </div>
           <div class="img-block">
             <img src="AI%20Claim%20pics/01%20User%20Problem%20pic.png" alt="User problem — unclaimed benefits visualization">
@@ -1164,7 +1164,7 @@
           <p class="P-400-SG">Business Problem</p>
           <h2 class="H2-600">Support inquiries increased</h2>
           <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-            <p class="P-400-G">The complexity of the manual process led to a surge in support inquiries, straining operational resources.</p>
+            <p class="P-400-G">The complexity of the manual process led to a surge in support inquiries, straining operational resources</p>
           </div>
           <div class="img-block">
             <img src="AI%20Claim%20pics/02%20Business%20Problem%20pic.png" alt="Business problem — support volume vs capacity chart">
@@ -1250,7 +1250,7 @@
     <!-- ── FEATURE 1 ── -->
     <div class="section-block" id="feature-1">
       <p class="P-400-SP section-tag">Feature 1</p>
-      <h1 class="H1-700">Automated one-time and recurring claims.</h1>
+      <h1 class="H1-700">Automated one-time and recurring claims</h1>
       <div class="P-400-G section-body" style="margin-bottom: var(--space-4);">
         <p class="P-400-G">Reduced manual entry with smarter pre-fill claim flows</p>
       </div>
@@ -1343,6 +1343,30 @@
             <img src="AI%20Claim%20pics/06%20new%20Services%20duration%20pic.png" alt="Service start and end date fields for recurring claims">
           </div>
         </div>
+      </div>
+      <!-- Automated claims iteration carousel -->
+      <div style="margin-top:var(--space-7); margin-bottom:var(--space-7);">
+        <h2 class="H2-600">Automated claims iteration</h2>
+        <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+          <p class="P-400-G">We tested three approaches: AI extraction proved too inaccurate, splitting recurring claims improved accuracy, and internal testing revealed different claim types need different approval paths</p>
+        </div>
+        <div class="carousel-wrap" id="aci-carousel">
+          <div class="carousel-track" id="aci-track">
+            <div class="carousel-slide">
+              <img src="AI%20Claim%20pics/26%20Previous%20-%20Manual%20claims.png" alt="Previous — Manual claims">
+            </div>
+            <div class="carousel-slide">
+              <img src="AI%20Claim%20pics/27%20V1_%20AI%20document%20reader.png" alt="V1: AI document reader">
+            </div>
+            <div class="carousel-slide">
+              <img src="AI%20Claim%20pics/28%20V2_%20Separating%20recurring%20claims.png" alt="V2: Separating recurring claims">
+            </div>
+            <div class="carousel-slide">
+              <img src="AI%20Claim%20pics/29%20V3_%20Policy-driven%20routing.png" alt="V3: Policy-driven routing">
+            </div>
+          </div>
+        </div>
+        <div class="carousel-dots" id="aci-dots"></div>
       </div>
     </div>
 
@@ -1489,7 +1513,7 @@
       <p class="P-400-SP section-tag">Outcomes</p>
       <h1 class="H1-700">Achievements</h1>
       <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
-        <p class="P-400-G">After these features launched, here are some outcomes we have achieved</p>
+        <p class="P-400-G">Users frequently abandoned claims because the process felt too complex.<span style="display:block;height:var(--space-1)"></span>After introducing automated claims, claim notifications, and benefit filters, here are the results:</p>
       </div>
       <div class="outcomes-grid">
 
@@ -1936,6 +1960,72 @@
     }
 
     // Touch swipe
+    let touchStartX = 0, touchDeltaX = 0;
+    container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    container.addEventListener('touchmove',  e => { touchDeltaX = e.touches[0].clientX - touchStartX; }, { passive: true });
+    container.addEventListener('touchend',   () => {
+      if (Math.abs(touchDeltaX) > 40) touchDeltaX < 0 ? goTo(current + 1) : goTo(current - 1);
+      touchDeltaX = 0;
+    });
+
+    const ro = new ResizeObserver(init);
+    ro.observe(container);
+    init();
+  })();
+
+  // ── Automated claims iteration carousel ──
+  (function() {
+    const container  = document.getElementById('aci-carousel');
+    const track      = document.getElementById('aci-track');
+    const dotsWrap   = document.getElementById('aci-dots');
+    const slides     = Array.from(track.children);
+    const GAP        = 16;
+    const SLIDE_RATIO = 0.875;
+
+    let current = 0;
+    let slideWidth = 0;
+
+    slides.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', `Slide ${i + 1}`);
+      btn.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(btn);
+    });
+
+    const dots = Array.from(dotsWrap.children);
+
+    function init() {
+      const cw = container.offsetWidth;
+      slideWidth = cw >= 840 ? 840 : cw * SLIDE_RATIO;
+      slides.forEach(s => { s.style.width = slideWidth + 'px'; });
+      goTo(current, false);
+    }
+
+    function goTo(n, animate = true) {
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      const cw = container.offsetWidth;
+      let offset;
+      if (current === 0) {
+        offset = 0;
+      } else if (current === slides.length - 1) {
+        offset = cw - slideWidth;
+      } else {
+        offset = (cw - slideWidth) / 2;
+      }
+      const x = -(current * (slideWidth + GAP)) + offset;
+
+      if (!animate) {
+        track.style.transition = 'none';
+        track.style.transform  = `translateX(${x}px)`;
+        track.offsetHeight;
+        track.style.transition = '';
+      } else {
+        track.style.transform = `translateX(${x}px)`;
+      }
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
     let touchStartX = 0, touchDeltaX = 0;
     container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
     container.addEventListener('touchmove',  e => { touchDeltaX = e.touches[0].clientX - touchStartX; }, { passive: true });

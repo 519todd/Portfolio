@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Todd Wu — Animated Favicon Preview</title>
+  <link id="favicon" rel="icon" type="image/png" href="Portfoilo%20assets/Purple flower.png">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, sans-serif;
+      gap: 24px;
+      color: #1c1c1e;
+    }
+    .label {
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+    }
+    .tab-mockup {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0f0f0;
+      border-radius: 8px 8px 0 0;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1c1c1e;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .tab-favicon {
+      width: 16px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <p class="label">Look at the browser tab — the flower favicon is spinning ↑</p>
+  <p class="label" style="color:#888; font-size:12px;">This is a preview. Approve to apply to the real site.</p>
+
+  <div class="tab-mockup">
+    <canvas class="tab-favicon" id="preview-canvas" width="16" height="16"></canvas>
+    <span>Todd Wu</span>
+  </div>
+  <p class="label" style="font-size: 12px;">↑ Mock browser tab for reference</p>
+
+  <script>
+    const img = new Image();
+    img.src = 'Portfoilo%20assets/Purple flower.png';
+
+    const faviconCanvas = document.createElement('canvas');
+    faviconCanvas.width = 32;
+    faviconCanvas.height = 32;
+    const faviconCtx = faviconCanvas.getContext('2d');
+
+    const previewCanvas = document.getElementById('preview-canvas');
+    const previewCtx = previewCanvas.getContext('2d');
+
+    const favicon = document.getElementById('favicon');
+    let angle = 0;
+
+    function drawRotated(ctx, size) {
+      ctx.clearRect(0, 0, size, size);
+      ctx.save();
+      ctx.translate(size / 2, size / 2);
+      ctx.rotate(angle);
+      // scale to 1/√2 so corners stay inside canvas at any rotation angle
+      const s = size * (1 / Math.SQRT2);
+      ctx.drawImage(img, -s / 2, -s / 2, s, s);
+      ctx.restore();
+    }
+
+    img.onload = function () {
+      function tick() {
+        angle += 0.015;
+
+        drawRotated(faviconCtx, 32);
+        favicon.href = faviconCanvas.toDataURL('image/png');
+
+        drawRotated(previewCtx, 16);
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    };
+  </script>
+</body>
+</html>
