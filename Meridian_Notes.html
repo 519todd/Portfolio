@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian Notes · Todd Wu</title>
+  <meta name="description" content="Designed a meeting workflow tool for financial advisors — AI summaries with a human accuracy gate and a client confirmation flow that produces a signed compliance record.">
+  <style>
+    :root {
+      /* ── DESIGN SYSTEM TOKENS ── */
+      --bg:               #ffffff;
+      --bg-surface:       #f5f5f3;
+      --ink:              #1c1c1e;
+      --ink-secondary:    #58534D;
+      --ink-tertiary:     #808080;
+      --accent:           #4E008E;
+      --border:           #e8e8e8;
+
+      --fg:               var(--ink);
+      --surface:          var(--bg-surface);
+      --purple:           var(--accent);
+      --purple-light:     rgba(78,0,142,.06);
+      --purple-border:    rgba(78,0,142,.16);
+
+      --ease-fast:        cubic-bezier(.62,.61,.02,1);
+      --ease-spring:      cubic-bezier(.16,1,.3,1);
+
+      /* ── TYPOGRAPHY TOKENS ── */
+      --font:        -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+      --h1-size:     clamp(2.25rem, 5vw, 2.5rem);
+      --h2-size:     clamp(1.625rem, 3.2vw, 2rem);
+      --h3-size:     clamp(1.0625rem, 1.8vw, 1.1875rem);
+      --p-size:      1.0625rem;
+      --ui-size:     1rem;
+      --small-size:  0.875rem;
+
+      /* ── SPACING TOKENS ── */
+      --space-05:  4px;
+      --space-1:   8px;
+      --space-2:   16px;
+      --space-3:   24px;
+      --space-4:   32px;
+      --space-5:   48px;
+      --space-6:   64px;
+      --space-7:   80px;
+      --space-8:   120px;
+      --space-9:   240px;
+
+      --shadow-card:
+        0 0 0 1px rgba(0,0,0,0.02),
+        0 1px 2px rgba(0,0,0,0.04),
+        0 4px 8px rgba(0,0,0,0.04),
+        0 12px 32px rgba(0,0,0,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+    ::selection { color: #fff; background: var(--purple); }
+
+    .H1-700 { font-size: var(--h1-size); font-weight: 700; line-height: 1.06; letter-spacing: -0.03em; margin-bottom: var(--space-4); color: #1c1c1e; }
+    .H2-600 { font-size: var(--h2-size); font-weight: 600; letter-spacing: -0.0022em; line-height: 1.20; margin-bottom: var(--space-3); color: #1c1c1e; }
+    .H3-500 { font-size: var(--h3-size); font-weight: 500; letter-spacing: -0.0022em; line-height: 1.40; margin-bottom: var(--space-2); color: #1c1c1e; }
+    .H3-600 { font-size: var(--h3-size); font-weight: 600; letter-spacing: -0.01em; line-height: 1.40; color: #1c1c1e; margin-bottom: var(--space-1); }
+    .P-400-B  { font-size: var(--p-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.75; margin-bottom: var(--space-2); color: #1c1c1e; }
+    .P-400-G  { font-size: var(--p-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.2; margin-bottom: var(--space-2); color: #58534D; }
+    .P-400-G-List { font-size: var(--p-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.2; margin-bottom: var(--space-1); color: #58534D; }
+    .P-400-P  { font-size: var(--p-size); font-weight: 400; letter-spacing: 0em; line-height: 1.2; margin-bottom: var(--space-2); color: #4E008E; }
+    .P-400-SP { font-size: var(--ui-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.5; margin-bottom: var(--space-1); color: #4E008E; }
+    .P-400-SG { font-size: var(--ui-size); font-weight: 400; letter-spacing: 0.02em; line-height: 1.5; margin-bottom: var(--space-1); color: #808080; }
+
+    /* ── NAV GRADIENT OVERLAY ── */
+    .nav-bg-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 15vh;
+      background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ── TOP NAV ── */
+    .top-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 4.5rem 2rem 1.5rem;
+      transition: padding-top 300ms var(--ease-fast);
+    }
+    .top-nav.nav-compact { padding-top: 1.25rem; }
+    .top-nav-inner {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4375rem;
+      font-size: var(--p-size);
+      font-weight: 400;
+      line-height: 1.75;
+    }
+    .tn-slot {
+      position: relative;
+      height: 1em;
+      overflow: hidden;
+      width: 0px;
+      transition: width 700ms var(--ease-fast);
+      line-height: 1;
+    }
+    .tn-ghost {
+      position: absolute;
+      visibility: hidden;
+      white-space: nowrap;
+      pointer-events: none;
+      top: 0; left: 0;
+    }
+    .tn-text {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 1em;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      transform: translateY(110%);
+      transition: transform 700ms var(--ease-fast);
+    }
+    .tn-slot.entered .tn-text { transform: translateY(0%); }
+    .tn-home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #808080;
+      text-decoration: none;
+      transition: color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .tn-home-link:hover { color: #1c1c1e; }
+    .tn-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #4E008E;
+      flex-shrink: 0;
+    }
+    .tn-chev { color: #808080; padding: 0 var(--space-2); }
+
+    /* ── SIDEBAR ── */
+    .case-sidebar {
+      position: fixed;
+      left: 0; top: 0;
+      height: 100%;
+      width: 150px;
+      z-index: 40;
+      display: none;
+      flex-direction: column;
+      padding-top: 40px;
+      padding-left: 24px;
+    }
+    @media (min-width: 1024px) { .case-sidebar { display: flex; } }
+    .sidebar-home {
+      font-size: var(--p-size);
+      font-family: var(--font);
+      font-weight: 400;
+      line-height: 1.75;
+      margin-bottom: 32px;
+      color: #808080;
+      text-decoration: none;
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity 500ms var(--ease-spring), transform 500ms var(--ease-spring), color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .sidebar-home.visible { opacity: 1; transform: none; }
+    .sidebar-home:hover { color: #1c1c1e; }
+    .sidebar-nav { display: flex; flex-direction: column; }
+    .nav-link {
+      text-align: left;
+      font-size: var(--p-size);
+      font-family: var(--font);
+      line-height: 1.75;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: #808080;
+      font-weight: 400;
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity 500ms var(--ease-spring), transform 500ms var(--ease-spring), color 300ms cubic-bezier(0,0,.2,1);
+    }
+    .nav-link.visible { opacity: 1; transform: none; }
+    .nav-link.active { color: #4E008E; }
+    .nav-link:hover { color: #1c1c1e; }
+    .nav-link:focus-visible { outline: none; }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      width: 100%;
+      padding: var(--space-9) clamp(16px, 4vw, 48px) 160px;
+      display: flex;
+      justify-content: center;
+    }
+    .main-inner { width: 100%; max-width: 75%; padding: 0 clamp(16px, 4vw, 48px); margin: 0 auto; }
+
+    #hero { margin-bottom: var(--space-8); }
+    .intro-dark { margin-bottom: var(--space-1); }
+    .intro-dark-desc { margin-bottom: var(--space-4); max-width: 600px; }
+    .intro-dark-desc p { margin-bottom: var(--space-1); }
+    .intro-dark-desc p:last-child { margin-bottom: 0; }
+    .intro-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+
+    /* ── SECTION BLOCK ── */
+    .section-block {
+      margin-bottom: var(--space-8);
+      scroll-margin-top: 120px;
+    }
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 16px;
+      border-radius: 999px;
+      background: rgba(92,6,140,.07);
+      border: 1px solid rgba(92,6,140,.18);
+      margin-bottom: var(--space-1);
+    }
+    .reflection-list { padding-left: 18px; list-style: disc; }
+    .section-body p { margin-bottom: 0; }
+    .section-body strong { color: var(--fg); font-weight: 600; }
+
+    /* ── TWO-COL ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+      align-items: stretch;
+    }
+    .two-col > div { display: flex; flex-direction: column; }
+
+    /* ── IMAGE / MOCKUP BLOCK ── */
+    .img-block {
+      width: 100%;
+      border-radius: 0;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    /* ── FEATURE CARDS ── */
+    .feat-cards-grid {
+      margin-top: var(--space-4);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+    .feat-card-static {
+      background: #f8f8f8;
+      border-radius: 16px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .feat-card-static svg { margin-bottom: var(--space-2); }
+
+    /* ── BENTO GRID (Solution → 5 screens) ── */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+    .bento-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f8f8f8;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: transform .25s var(--ease-spring), background .2s;
+      min-height: 200px;
+    }
+    .bento-card:hover { transform: scale(0.98); background: #f1ebf6; }
+    .bento-card:focus-visible { outline: 2px solid var(--purple); outline-offset: -2px; }
+    .bento-full { grid-column: 1 / -1; }
+    .bento-footer { padding: var(--space-2); }
+    .bento-footer-icon { margin-bottom: var(--space-1); }
+    .bento-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: 10px;
+      background: rgba(78,0,142,.08);
+      color: #4E008E;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .bento-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .2s, transform .2s var(--ease-spring);
+    }
+    .bento-card:hover .bento-cta { opacity: 1; transform: translateY(0); }
+
+    /* ── SAFARI FRAME (interactive prototype) ── */
+    .feat1-scan {
+      background: #F8F8F8;
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 960 / 700;
+      margin: 0 auto var(--space-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      container-type: size;
+    }
+    .feat1-safari {
+      height: 94cqh;
+      width: auto;
+      aspect-ratio: 1440 / 1000;
+      max-width: 94cqw;
+      border-radius: 1.25cqw;
+      overflow: hidden;
+      border: 1px solid #e2e2e2;
+      box-shadow: 0 1px 16px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      container-type: inline-size;
+    }
+    .safari-chrome {
+      background: #f6f6f6;
+      padding: 0.6cqw 2.08cqw;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #e8e8e8;
+      flex-shrink: 0;
+    }
+    .safari-lights { display: flex; gap: 0.83cqw; flex-shrink: 0; }
+    .safari-lights span {
+      display: block;
+      width: 1.25cqw;
+      height: 1.25cqw;
+      border-radius: 50%;
+      background: #c5c5c7;
+    }
+    .safari-url-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 0 5.83cqw;
+    }
+    .safari-url {
+      background: #ebebeb;
+      border-radius: 0.83cqw;
+      padding: 0.52cqw 1.46cqw;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.52cqw;
+      font-size: 1.25cqw;
+      color: #6b6b6b;
+      font-family: var(--font);
+      letter-spacing: -.01em;
+      white-space: nowrap;
+      max-width: 33.33cqw;
+      width: 100%;
+      justify-content: center;
+    }
+    .safari-url svg { width: 0.94cqw; height: 1.15cqw; flex-shrink: 0; }
+    .safari-app-wrap {
+      background: #fff;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .safari-app-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: 0;
+    }
+    .try-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: var(--space-7);
+      color: #808080;
+      font-size: var(--small-size);
+      letter-spacing: 0.02em;
+    }
+    .try-hint .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #4E008E;
+      animation: pulse 2s var(--ease-spring) infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(78,0,142,.35); }
+      70%  { box-shadow: 0 0 0 9px rgba(78,0,142,0); }
+      100% { box-shadow: 0 0 0 0 rgba(78,0,142,0); }
+    }
+
+    /* ── UI MOCKUPS (pure CSS, stand-ins for screenshots) ── */
+    .mock-stage {
+      background: #f8f8f8;
+      padding: clamp(28px, 4vw, 48px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 476 / 440;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .two-col .mock-stage { margin-top: auto; }
+    .mock-card {
+      background: #fff;
+      border: 1px solid #ececec;
+      border-radius: 16px;
+      box-shadow: var(--shadow-card);
+      width: 100%;
+      max-width: 100%;
+      padding: 28px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #1c1c1e;
+    }
+    .mock-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #808080;
+      margin-bottom: 12px;
+    }
+    .mock-hl {
+      background: #ede9fe;
+      color: #4E008E;
+      font-weight: 600;
+      border-radius: 4px;
+      padding: 0 4px;
+    }
+    .mock-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 3px 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .mock-pill.amber { background: #fef3c7; color: #92400e; }
+    .mock-pill.red   { background: #fee2e2; color: #b91c1c; }
+    .mock-pill.green { background: #d1fae5; color: #047857; }
+    .mock-pill.purple{ background: #ede9fe; color: #4E008E; }
+    .mock-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 0;
+      border-top: 1px solid #f0f0f0;
+    }
+    .mock-row:first-of-type { border-top: 0; }
+    .mock-check {
+      width: 18px; height: 18px;
+      border-radius: 5px;
+      border: 1.5px solid #c9c9ce;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mock-check.on {
+      background: #4E008E;
+      border-color: #4E008E;
+    }
+    .mock-check.on::after {
+      content: '';
+      width: 9px; height: 5px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg) translateY(-1px);
+    }
+    .mock-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #4E008E;
+      color: #fff;
+    }
+    .mock-btn.disabled { background: #e5e5ea; color: #aeaeb2; }
+    .mock-btn.ghost { background: #fff; color: #4E008E; border: 1px solid rgba(78,0,142,.3); }
+    .mock-input {
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: #808080;
+      background: #fafafa;
+    }
+    .mock-meta { font-size: 12px; color: #808080; }
+
+    /* ── "What was said" auto-loop (open 5s / closed 3s) ── */
+    .ws-label-collapsed { animation: wsLabelCollapsed 8s linear infinite; }
+    .ws-label-expanded { animation: wsLabelExpanded 8s linear infinite; opacity: 0; }
+    .ws-chevron { animation: wsChevronRotate 8s linear infinite; transform-origin: center; }
+    .ws-detail { max-height: 0; padding: 0 8px; margin-top: 0; opacity: 0; animation: wsDetailOpen 8s linear infinite; }
+    @keyframes wsLabelCollapsed { 0%, 62.4% { opacity: 0; } 62.5%, 100% { opacity: 1; } }
+    @keyframes wsLabelExpanded { 0%, 62.4% { opacity: 1; } 62.5%, 100% { opacity: 0; } }
+    @keyframes wsChevronRotate { 0%, 62.4% { transform: rotate(180deg); } 62.5%, 100% { transform: rotate(0deg); } }
+    @keyframes wsDetailOpen {
+      0%, 62.4% { max-height: 110px; padding: 8px; margin-top: 8px; opacity: 1; }
+      62.5%, 100% { max-height: 0; padding: 0 8px; margin-top: 0; opacity: 0; }
+    }
+
+    /* ── "Mark verified" interactive toggle (CSS-only) ── */
+    .verify-checkbox { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+    .verify-btn-done, .flag-alert-done, .flags-badge-done { display: none; }
+    .flag-row { border: 1px solid #fca5a5; background: #fef2f2; transition: background .2s, border-color .2s; }
+    .mock-card:has(.verify-checkbox:checked) .verify-btn-default { display: none; }
+    .mock-card:has(.verify-checkbox:checked) .verify-btn-done { display: inline-flex; }
+    .mock-card:has(.verify-checkbox:checked) .flag-row { border-color: #e5e7eb; background: #fff; }
+    .mock-card:has(.verify-checkbox:checked) .flag-alert-default { display: none; }
+    .mock-card:has(.verify-checkbox:checked) .flag-alert-done { display: inline; }
+    .mock-card:has(.verify-checkbox:checked) .flags-badge-default { display: none; }
+    .mock-card:has(.verify-checkbox:checked) .flags-badge-done { display: inline-flex; }
+    .verify-btn-label { cursor: pointer; }
+
+    /* ── Allocation hover tooltip ── */
+    .alloc-row { position: relative; }
+    .alloc-tooltip {
+      position: absolute;
+      top: -6px; left: 46%;
+      z-index: 5;
+      width: 168px;
+      background: #fff;
+      border: 1px solid #e2e2e2;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      padding: 12px 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s;
+    }
+    .alloc-row:hover .alloc-tooltip { opacity: 1; }
+    .alloc-tooltip p { margin: 0 0 4px; font-size: 12px; color: #1c1c1e; }
+    .alloc-tooltip p:first-child { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+    .alloc-tooltip p:last-child { margin-bottom: 0; }
+
+    /* ── OUTCOMES GRID ── */
+    .outcomes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+    .outcome-card {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid rgba(209,213,219,0.5);
+      background: #F1EBF6;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .outcome-card svg { margin-bottom: 16px; }
+
+    /* ── REFLECTION FLEX ── */
+    .reflection-flex {
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      margin-bottom: var(--space-7);
+      min-height: 320px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #ffffff;
+    }
+    .reflection-text { flex: 1; padding: 40px 48px; z-index: 1; min-width: 0; }
+
+    /* ── GRAIN ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.018;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 834px) {
+      .main { padding: var(--space-9) var(--space-2) 100px; }
+      .main-inner { max-width: 100%; }
+      .section-block { margin-bottom: var(--space-7); }
+      .two-col { grid-template-columns: 1fr; gap: var(--space-7); }
+      .intro-meta-grid { grid-template-columns: 1fr 1fr; }
+      .feat-cards-grid { grid-template-columns: 1fr; }
+      .outcomes-grid { grid-template-columns: 1fr 1fr; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-full { grid-column: span 1; }
+      .reflection-flex { flex-direction: column; min-height: auto; }
+      .reflection-text { padding: 32px 24px; }
+    }
+    @media (max-width: 480px) {
+      .intro-meta-grid { grid-template-columns: 1fr; gap: var(--space-1); }
+      .outcomes-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav-bg-overlay" aria-hidden="true"></div>
+<nav class="top-nav" id="top-nav" aria-label="Breadcrumb navigation">
+  <div class="top-nav-inner">
+
+    <!-- Slot 1: Todd Wu home link -->
+    <div class="tn-slot" id="tn-slot-1" style="transition-delay: 100ms;">
+      <div class="tn-ghost">
+        Todd Wu<span style="color:#808080;padding:0 var(--space-2);">›</span>
+      </div>
+      <div class="tn-text" style="transition-delay: 0ms;">
+        <a href="index.html?skip=1" class="tn-home-link">
+          Todd Wu<span class="tn-chev">›</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Slot 2: Meridian Notes page title -->
+    <div class="tn-slot" id="tn-slot-2" style="transition-delay: 200ms;">
+      <div class="tn-ghost">
+        <span style="display:inline-flex;align-items:center;gap:var(--space-1);"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#4E008E;flex-shrink:0;"></span>Meridian Notes</span>
+      </div>
+      <div class="tn-text" style="transition-delay: 100ms;">
+        <span class="tn-home-link" style="color:#1c1c1e;cursor:default;gap:var(--space-1);">
+          <span class="tn-dot"></span>Meridian Notes
+        </span>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="case-sidebar" id="sidebar">
+    <a href="index.html?skip=1" class="sidebar-home">Home</a>
+    <nav class="sidebar-nav" aria-label="Section navigation">
+      <button class="nav-link" data-target="hero">Intro</button>
+      <button class="nav-link" data-target="challenge">Challenge</button>
+      <button class="nav-link" data-target="solution">Solution</button>
+      <button class="nav-link" data-target="screen-1">1 · Today</button>
+      <button class="nav-link" data-target="screen-2">2 · Record</button>
+      <button class="nav-link" data-target="screen-3">3 · Summary</button>
+      <button class="nav-link" data-target="screen-4">4 · Actions</button>
+      <button class="nav-link" data-target="screen-5">5 · Client view</button>
+      <button class="nav-link" data-target="metrics">Metrics</button>
+      <button class="nav-link" data-target="reflection">Reflection</button>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+  <div class="main-inner">
+
+    <!-- ── INTRO ── -->
+    <div id="hero" style="scroll-margin-top:120px;">
+
+      <p class="P-400-SP section-tag">Intro</p>
+      <h1 class="H1-700">AI meeting notes that clients actually confirm</h1>
+
+      <div class="intro-dark">
+        <h3 class="H3-500">Meridian Notes</h3>
+        <div class="P-400-B intro-dark-desc">
+          <p class="P-400-B">Meridian Notes is a meeting workflow tool for financial advisors. It records a client meeting, generates an AI summary with per-claim confidence flags, converts it into calendared action items, and sends the client a plain-language version they must read, confirm point by point, and sign.</p>
+          <p class="P-400-B">I designed and built the clickable prototype end-to-end — a five-screen flow that validates the core bet: no AI output reaches a client until a human verifies it, and no record counts until the client confirms it.</p>
+        </div>
+
+        <div class="intro-meta-grid">
+          <div>
+            <h3 class="H3-500">Target user</h3>
+            <p class="P-400-B">Solo &amp; small-firm advisors<br>CFP running multiple meetings/day<br>High-net-worth client book</p>
+          </div>
+          <div>
+            <h3 class="H3-500">Role</h3>
+            <p class="P-400-B">Product Designer<br>End-to-end design &amp; prototype build</p>
+          </div>
+          <div>
+            <h3 class="H3-500">Process</h3>
+            <p class="P-400-B">AI-assisted prototyping<br>Workflow mapping<br>Compliance-driven design<br>React clickable prototype</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── CHALLENGE ── -->
+    <div class="section-block" id="challenge">
+      <p class="P-400-SP section-tag">Challenge</p>
+      <h1 class="H1-700">Multiple meetings a day, and every recap is a liability</h1>
+      <div class="P-400-G section-body">
+        <p class="P-400-G">After each meeting an advisor must reconstruct what was said, extract the numbers that matter, turn commitments into tasks, and send the client a recap — manually, multiple times a day</p>
+      </div>
+
+      <div class="feat-cards-grid">
+
+        <div class="feat-card-static">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <p class="P-400-G-List" style="color:#1c1c1e; margin-bottom:0;">Reconstructing notes across multiple meetings eats the advisor's evening</p>
+        </div>
+
+        <div class="feat-card-static">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <p class="P-400-G-List" style="color:#1c1c1e; margin-bottom:0;">Dollar amounts, percentages and dates are exactly where memory errors happen</p>
+        </div>
+
+        <div class="feat-card-static">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/>
+          </svg>
+          <p class="P-400-G-List" style="color:#1c1c1e; margin-bottom:0;">Recaps are sent, but never verified or acknowledged by the client</p>
+        </div>
+
+      </div>
+
+      <div class="two-col" style="margin-top: var(--space-7);">
+        <div>
+          <h2 class="H2-600">Wrong number damages trust</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">A recap with a wrong figure — even a small one — destroys the very client trust AI was meant to save time building</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label">Recap email · sent manually at 9:42 PM</div>
+              <p style="margin-bottom:10px;">"…your retirement target of <span class="mock-hl">$3.1M</span> remains on track, and we agreed to trim NVDA from <span class="mock-hl">18% → 10%</span> over two quarters."</p>
+              <span class="mock-pill red">⚠ Was it $3.1M — or $3.7M?</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2 class="H2-600">Verbal advice has no audit trail</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Advice given verbally with no written, client-acknowledged record is a compliance exposure for the firm</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label">Compliance file · Michael Chen</div>
+              <div class="mock-row"><span class="mock-meta">Jun 12 — CRM note (typed from memory)</span></div>
+              <div class="mock-row"><span class="mock-meta">Jun 12 — Recap email (unopened?)</span></div>
+              <div class="mock-row"><span class="mock-meta" style="color:#b91c1c;">Client acknowledgment — missing</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SOLUTION ── -->
+    <div class="section-block" id="solution">
+      <p class="P-400-SP section-tag">Solution</p>
+      <h1 class="H1-700">Turning every meeting into an accurate, client-confirmed record — without the evening of typing</h1>
+      <div class="P-400-G section-body">
+        <p class="P-400-G">A five-screen gated flow. Each step unlocks only after the previous one is done — the compliance value depends on the order</p>
+      </div>
+      <div class="bento-grid">
+
+        <a class="bento-card" href="#screen-1">
+          <div class="bento-footer">
+            <div class="bento-footer-icon"><span class="bento-num">1</span></div>
+            <h3 class="H3-600">Today — the advisor's day at a glance</h3>
+            <p class="P-400-G">Schedule, pre-meeting prep with a personal hook, portfolio snapshot, and a cross-client action board. Try the live prototype below</p>
+            <span class="P-400-SP bento-cta">View screen 1 →</span>
+          </div>
+        </a>
+
+        <a class="bento-card" href="#screen-2">
+          <div class="bento-footer">
+            <div class="bento-footer-icon"><span class="bento-num">2</span></div>
+            <h3 class="H3-600">Record — live transcript with number highlighting</h3>
+            <p class="P-400-G">Verify figures in the moment; pause is an off-record compliance feature</p>
+            <span class="P-400-SP bento-cta">View screen 2 →</span>
+          </div>
+        </a>
+
+        <a class="bento-card bento-full" href="#screen-3">
+          <div class="bento-footer">
+            <div class="bento-footer-icon"><span class="bento-num">3</span></div>
+            <h3 class="H3-600">Summary — the accuracy gate</h3>
+            <p class="P-400-G">Every AI claim is confidence-tagged; low-confidence claims block progress until verified</p>
+            <span class="P-400-SP bento-cta">View screen 3 →</span>
+          </div>
+        </a>
+
+        <a class="bento-card" href="#screen-4">
+          <div class="bento-footer">
+            <div class="bento-footer-icon"><span class="bento-num">4</span></div>
+            <h3 class="H3-600">Actions — commitments become scheduled work</h3>
+            <p class="P-400-G">Editable, calendared action items with reminders, shared with the Today board</p>
+            <span class="P-400-SP bento-cta">View screen 4 →</span>
+          </div>
+        </a>
+
+        <a class="bento-card" href="#screen-5">
+          <div class="bento-footer">
+            <div class="bento-footer-icon"><span class="bento-num">5</span></div>
+            <h3 class="H3-600">Client view — confirm, dispute, sign</h3>
+            <p class="P-400-G">Plain-language summary the client confirms point by point and signs — the compliance artifact</p>
+            <span class="P-400-SP bento-cta">View screen 5 →</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ── SCREEN 1: TODAY ── -->
+    <div class="section-block" id="screen-1">
+      <p class="P-400-SP section-tag">Screen 1 · Today</p>
+      <h1 class="H1-700">Prep is pushed to the advisor, not searched for</h1>
+      <div class="P-400-G section-body" style="margin-bottom: var(--space-4);">
+        <p class="P-400-G">The day starts with the schedule, a hero card for the next meeting, and a week board of action items across all clients — this is the live prototype, click around</p>
+      </div>
+
+      <!-- Interactive prototype — Safari frame -->
+      <div class="feat1-scan">
+        <div class="feat1-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                app.meridiannotes.com
+              </div>
+            </div>
+          </div>
+          <!-- Live app -->
+          <div class="safari-app-wrap">
+            <iframe src="dist/index.html" title="Meridian Notes — interactive prototype" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="try-hint">
+        <span class="pulse-dot"></span>
+        Interactive prototype — start the next meeting and walk the full five-step flow (client PIN: 0412)
+      </div>
+
+      <div class="two-col" style="margin-top: 0;">
+        <div>
+          <p class="P-400-SG">Prep card</p>
+          <h2 class="H2-600">Personal conversation hook</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Last-meeting topics, a live portfolio donut, and one personal conversation hook per client. When social lookup fails, it falls back to the last CRM note with a visible warning</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label">Personal hook · Michael Chen</div>
+              <p style="margin-bottom:10px;">Daughter Emma just got into Berkeley — congratulate him before diving into numbers.</p>
+              <a href="https://www.instagram.com/m_michaelchen/" target="_blank" rel="noreferrer" class="mock-pill green" style="text-decoration:none;">✓ Social lookup — instagram.com/m_michaelchen</a>
+              <p class="mock-meta" style="margin-top:10px;">Use once, naturally. Sourced from public posts or your own CRM notes only.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Week board</p>
+          <h2 class="H2-600">Weekly action items</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Action items are first-class objects shared between the Today board and the post-meeting Actions screen — edit in either place, it's one task</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label" style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px; text-transform:none; letter-spacing:0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+                <span style="background:#ede9fe; color:#1c1c1e; font-weight:700; font-size:16px; padding:2px 4px; border-radius:4px;">This week action items</span>
+                <span style="color:#808080; font-weight:400; font-size:15px;">— all clients</span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:420px; margin:0 auto;">
+                <div style="background:#fafafa; border:1px solid #ececec; border-radius:12px; padding:14px;">
+                  <p style="font-size:13px; font-weight:700; color:#1c1c1e; text-align:center; margin-bottom:12px;">Thu 10</p>
+                  <div style="background:#fff; border-left:2px solid #4E008E; border-radius:6px; padding:10px 12px;">
+                    <span style="font-weight:600; color:#4E008E; font-size:13px;">M. Chen</span><br>
+                    <span style="font-size:13px; color:#1c1c1e;">Enter scheduled NVDA sell-down (18% → 10%,…</span>
+                  </div>
+                </div>
+                <div style="background:#fafafa; border:1px solid #ececec; border-radius:12px; padding:14px;">
+                  <p style="font-size:13px; font-weight:700; color:#1c1c1e; text-align:center; margin-bottom:12px;">Fri 11</p>
+                  <div style="background:#fff; border-left:2px solid #4E008E; border-radius:6px; padding:10px 12px;">
+                    <span style="font-weight:600; color:#4E008E; font-size:13px;">M. Chen</span><br>
+                    <span style="font-size:13px; color:#1c1c1e;">Transfer $95,000 → 529 money-market sleeve</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 2: RECORD ── -->
+    <div class="section-block" id="screen-2">
+      <p class="P-400-SP section-tag">Screen 2 · Record</p>
+      <h1 class="H1-700">Numbers are verified in the moment, not after</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">A live transcript auto-scrolls during the meeting. Dollar amounts, percentages and key ages are highlighted as they appear, so the advisor can catch a wrong figure while the client is still in the room</p>
+      </div>
+
+      <!-- Interactive prototype — Safari frame, boots straight into Record -->
+      <div class="feat1-scan">
+        <div class="feat1-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                app.meridiannotes.com
+              </div>
+            </div>
+          </div>
+          <!-- Live app -->
+          <div class="safari-app-wrap">
+            <iframe src="dist/index.html?screen=record" title="Meridian Notes — Record screen, interactive prototype" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="try-hint">
+        <span class="pulse-dot"></span>
+        Interactive prototype — start recording and watch the transcript fill in with figures highlighted live
+      </div>
+
+      <div class="two-col" style="margin-top: 0;">
+        <div>
+          <p class="P-400-SG">Live transcript</p>
+          <h2 class="H2-600">Highlight what matters to you</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Figures auto-highlighted in the advisor's chosen color</li>
+              <li class="P-400-G-List">Recording is disclosed, consented, encrypted at rest</li>
+              <li class="P-400-G-List">Transcript feeds the summary's provenance trail</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label">Recording · 23:41</div>
+              <p style="margin-bottom:8px;"><span class="mock-meta">Sarah:</span> "So the plan keeps your target at <span class="mock-hl">$3.1M</span> by <span class="mock-hl">age 65</span>."</p>
+              <p style="margin-bottom:8px;"><span class="mock-meta">Michael:</span> "And the NVIDIA position?"</p>
+              <p><span class="mock-meta">Sarah:</span> "We trim it from <span class="mock-hl">18%</span> down to <span class="mock-hl">10%</span> over two quarters."</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Pause</p>
+          <h2 class="H2-600">Pause is a compliance feature</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Pause isn't a convenience — it's labeled as an off-record sidebar, letting advisor and client go off the record deliberately and visibly</p>
+          </div>
+          <div style="height:8px;" aria-hidden="true"></div>
+          <div class="img-block mock-stage">
+            <div class="mock-card" style="text-align:center;">
+              <div class="mock-label">Recording paused</div>
+              <span class="mock-pill amber">Paused — off-record sidebar (not transcribed)</span>
+              <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                <span class="mock-btn" style="background:#4E008E; gap:8px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><polygon points="6,4 20,12 6,20"/></svg>
+                  Resume
+                </span>
+                <span class="mock-btn" style="background:#dc2626; gap:8px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+                  Stop
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 3: SUMMARY ── -->
+    <div class="section-block" id="screen-3">
+      <p class="P-400-SP section-tag">Screen 3 · Summary</p>
+      <h1 class="H1-700">The AI states its own uncertainty — and the UI refuses to proceed</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">Every key point carries a category tag, a confidence level, and an expandable "What was said" provenance trail. Low-confidence claims render in red and each must be human-verified before the flow continues. This is the product's core mechanic — this is the live prototype, click around</p>
+      </div>
+
+      <!-- Interactive prototype — Safari frame, boots straight into Summary -->
+      <div class="feat1-scan">
+        <div class="feat1-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                app.meridiannotes.com
+              </div>
+            </div>
+          </div>
+          <!-- Live app -->
+          <div class="safari-app-wrap">
+            <iframe src="dist/index.html?screen=summary" title="Meridian Notes — Summary screen, interactive prototype" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="try-hint">
+        <span class="pulse-dot"></span>
+        Interactive prototype — mark the flagged points verified and watch "Approve &amp; generate action items" unlock
+      </div>
+
+      <div class="two-col" style="margin-top: 0;">
+        <div>
+          <p class="P-400-SG">Multilingual</p>
+          <h2 class="H2-600">Send the summary in another language</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Language picker offers English, 中文 (Mandarin), and Español</li>
+              <li class="P-400-G-List">Advisor's working view stays in English; only the client copy translates</li>
+              <li class="P-400-G-List">Translation generates at send time and ships alongside the original</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card" style="max-width:260px;">
+              <div style="display:flex; align-items:center; gap:8px; border:1px solid #d6d6d6; border-radius:8px; padding:8px 12px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#808080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                <span style="font-size:13px; color:#1c1c1e;">English</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#808080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+              <div style="margin-top:8px; border:1px solid #e2e2e2; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                <div style="background:#4E008E; color:#fff; padding:8px 14px; display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  English
+                </div>
+                <div style="padding:8px 14px; font-size:13px; color:#1c1c1e; border-top:1px solid #f0f0f0;">中文 (Mandarin)</div>
+                <div style="padding:8px 14px; font-size:13px; color:#1c1c1e; border-top:1px solid #f0f0f0;">Español</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Provenance</p>
+          <h2 class="H2-600">What was said</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Every key point expands to the transcript context it was pulled from</li>
+              <li class="P-400-G-List">Lets an advisor check a claim without re-reading the whole transcript</li>
+              <li class="P-400-G-List">Same mechanism supporting flag resolution: expand, compare, then verify</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-row" style="border-top:0; align-items:flex-start;">
+                <span style="width:11px; height:11px; border-radius:3px; background:#2a78d6; flex-shrink:0; margin-top:4px;"></span>
+                <div style="min-width:0;">
+                  <p style="margin-bottom:8px;">Trim NVDA concentration from 18% → 10% of portfolio over two quarters via scheduled sales.</p>
+                  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:14px; font-size:12px; color:#58534D;">
+                    <span>US Equities</span>
+                    <span style="color:#4E008E; font-weight:600; display:inline-flex; align-items:center; gap:4px; position:relative;">
+                      <span style="position:relative;">
+                        <span class="ws-label-collapsed">What was said</span>
+                        <span class="ws-label-expanded" style="position:absolute; left:0; top:0; white-space:nowrap;">Hide context</span>
+                      </span>
+                      <svg class="ws-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </span>
+                    <span style="display:inline-flex; align-items:center; gap:4px;">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#58534D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
+                      Edit
+                    </span>
+                    <span style="display:inline-flex; align-items:center; gap:4px;">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#58534D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      Remove
+                    </span>
+                  </div>
+                  <p class="ws-detail" style="background:#f7f7f6; border-radius:6px; font-size:12px; line-height:1.5; color:#58534D; overflow:hidden;">Michael raised concentration risk unprompted ("keeps me up at night"). Agreed on a disciplined, scheduled sell-down rather than a single block sale, to average out and reduce timing regret.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top: var(--space-7);">
+        <div>
+          <p class="P-400-SG">Accuracy gate</p>
+          <h2 class="H2-600">AI confidence-tagged</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Each key point carries an investment-category tag and a confidence level</li>
+              <li class="P-400-G-List">Low-confidence points render red and need "Mark verified" before send</li>
+              <li class="P-400-G-List">"Approve &amp; generate action items" stays disabled until every flag clears</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <input type="checkbox" id="verify-b3" class="verify-checkbox">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div class="mock-label" style="margin-bottom:0;">Key points</div>
+                <span class="mock-pill red flags-badge-default">2 of 2 flags need review</span>
+                <span class="mock-pill green flags-badge-done">All flags reviewed ✓</span>
+              </div>
+              <div class="mock-row flag-row" style="align-items:flex-start; border-radius:8px; padding:12px;">
+                <span style="width:11px; height:11px; border-radius:3px; background:#1baf7a; flex-shrink:0; margin-top:4px;"></span>
+                <div style="min-width:0; flex:1;">
+                  <p style="margin-bottom:8px;">Retirement-at-62 target requires ~$3.1M at a 4% withdrawal rate; base case crosses at age 61.</p>
+                  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; font-size:12px;">
+                    <span style="color:#58534D;">Fixed Income</span>
+                    <span style="color:#dc2626; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      <span class="flag-alert-default">verify before send</span>
+                      <span class="flag-alert-done">Verified</span>
+                    </span>
+                  </div>
+                </div>
+                <label for="verify-b3" class="mock-btn verify-btn-label verify-btn-default" style="background:#dc2626; flex-shrink:0;">Mark verified</label>
+                <label for="verify-b3" class="mock-btn verify-btn-label verify-btn-done" style="background:#d1fae5; color:#047857; flex-shrink:0;">✓ Verified</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Relationship touch</p>
+          <h2 class="H2-600">Suggested reading</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Articles relevant to the meeting's topics, attached with one checkbox</li>
+              <li class="P-400-G-List">Shared with the client alongside the confirmed summary</li>
+              <li class="P-400-G-List">A static list in V1 — nice-to-have, not a required step</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label">Suggested reading for Michael (optional attach)</div>
+              <div class="mock-row" style="border-top:0; align-items:flex-start;">
+                <span class="mock-check on" style="margin-top:2px;"></span>
+                <div style="min-width:0;">
+                  <a href="https://www.amazon.com/dp/0857197681" target="_blank" rel="noreferrer" style="color:#1c1c1e; font-weight:500; text-decoration:none; display:inline-flex; align-items:baseline; gap:4px;">
+                    The Psychology of Money — Ch. 9 on concentration
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#808080" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                  </a>
+                  <div style="font-size:12px; color:#808080; margin-top:4px;"><span style="background:#f0f0f0; border-radius:4px; padding:1px 6px; margin-right:6px;">Amazon</span>Directly addresses single-stock anxiety</div>
+                </div>
+              </div>
+              <div class="mock-row" style="align-items:flex-start;">
+                <span class="mock-check on" style="margin-top:2px;"></span>
+                <div style="min-width:0;">
+                  <a href="https://investor.vanguard.com/investor-resources-education/retirement/income-sustainable-withdrawal-rate" target="_blank" rel="noreferrer" style="color:#1c1c1e; font-weight:500; text-decoration:none; display:inline-flex; align-items:baseline; gap:4px;">
+                    Vanguard: Setting a sustainable withdrawal rate (2026)
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#808080" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                  </a>
+                  <div style="font-size:12px; color:#808080; margin-top:4px;"><span style="background:#f0f0f0; border-radius:4px; padding:1px 6px; margin-right:6px;">vanguard.com</span>Supports the 4% discussion with data</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top: var(--space-7);">
+        <div>
+          <p class="P-400-SG">Allocation</p>
+          <h2 class="H2-600">Today vs. agreed target</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Current holdings plotted against the target agreed in the meeting</li>
+              <li class="P-400-G-List">Direct-labeled, so drift reads at a glance without a legend</li>
+              <li class="P-400-G-List">The advisor chooses whether this chart is shared with the client</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card" style="padding:20px;">
+              <div class="mock-label" style="margin-bottom:8px;">Allocation: today vs. agreed target</div>
+              <div class="alloc-row" style="margin-bottom:6px;">
+                <p class="mock-meta" style="margin-bottom:2px;">US Equities</p>
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#2a78d6; height:6px; width:52%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; font-weight:600; color:#1c1c1e; width:26px;">52%</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#2a78d6; opacity:.35; height:6px; width:45%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; color:#808080; width:26px;">45%</span>
+                </div>
+                <div class="alloc-tooltip">
+                  <p>US Equities</p>
+                  <p>Current : 52%</p>
+                  <p>Target : 45%</p>
+                </div>
+              </div>
+              <div class="alloc-row" style="margin-bottom:6px;">
+                <p class="mock-meta" style="margin-bottom:2px;">Fixed Income</p>
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#1baf7a; height:6px; width:22%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; font-weight:600; color:#1c1c1e; width:26px;">22%</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#1baf7a; opacity:.35; height:6px; width:30%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; color:#808080; width:26px;">30%</span>
+                </div>
+                <div class="alloc-tooltip">
+                  <p>Fixed Income</p>
+                  <p>Current : 22%</p>
+                  <p>Target : 30%</p>
+                </div>
+              </div>
+              <div class="alloc-row" style="margin-bottom:6px;">
+                <p class="mock-meta" style="margin-bottom:2px;">Real Estate</p>
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#eda100; height:6px; width:12%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; font-weight:600; color:#1c1c1e; width:26px;">12%</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#eda100; opacity:.35; height:6px; width:12%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; color:#808080; width:26px;">12%</span>
+                </div>
+                <div class="alloc-tooltip">
+                  <p>Real Estate</p>
+                  <p>Current : 12%</p>
+                  <p>Target : 12%</p>
+                </div>
+              </div>
+              <div class="alloc-row">
+                <p class="mock-meta" style="margin-bottom:2px;">Cash &amp; Equiv.</p>
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#008300; height:6px; width:14%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; font-weight:600; color:#1c1c1e; width:26px;">14%</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <div style="flex:1; background:#f0f0f0; border-radius:4px; height:6px; overflow:hidden;"><div style="background:#008300; opacity:.35; height:6px; width:13%; border-radius:4px;"></div></div>
+                  <span style="font-size:10px; color:#808080; width:26px;">13%</span>
+                </div>
+                <div class="alloc-tooltip">
+                  <p>Cash &amp; Equiv.</p>
+                  <p>Current : 14%</p>
+                  <p>Target : 13%</p>
+                </div>
+              </div>
+              <p class="mock-meta" style="margin-top:6px; margin-bottom:0;">Solid = current · faded = agreed target</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Retirement goal</p>
+          <h2 class="H2-600">Live retirement projection</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Goal and monthly-contribution sliders recompute the projection live</li>
+              <li class="P-400-G-List">If the goal isn't reachable by 65, the caption prompts to adjust either input</li>
+              <li class="P-400-G-List">An in-meeting tool the advisor can walk the client through in real time</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label">Retirement goal</div>
+              <div style="display:flex; gap:16px; margin-bottom:14px;">
+                <div style="flex:1;">
+                  <p class="mock-meta" style="margin-bottom:5px;">Goal at retirement: <b style="color:#1c1c1e;">$3.1M</b></p>
+                  <div style="background:#ede9fe; border-radius:999px; height:6px;"><div style="background:#4E008E; height:6px; border-radius:999px; width:60%;"></div></div>
+                </div>
+                <div style="flex:1;">
+                  <p class="mock-meta" style="margin-bottom:5px;">Monthly contribution: <b style="color:#1c1c1e;">$8K</b></p>
+                  <div style="background:#ede9fe; border-radius:999px; height:6px;"><div style="background:#4E008E; height:6px; border-radius:999px; width:40%;"></div></div>
+                </div>
+              </div>
+              <svg viewBox="0 0 220 84" width="100%" height="84" style="display:block;">
+                <text x="150" y="10" font-size="8" fill="#4E008E" font-weight="600" text-anchor="middle">age 61</text>
+                <line x1="150" y1="16" x2="150" y2="84" stroke="#4E008E" stroke-width="1" stroke-dasharray="2 3"/>
+                <line x1="0" y1="38" x2="220" y2="38" stroke="#c3c2b7" stroke-width="1" stroke-dasharray="4 4"/>
+                <text x="216" y="34" font-size="8" fill="#52514e" text-anchor="end">goal $3.1M</text>
+                <polyline points="0,76 40,66 80,54 120,40 150,38 220,14" fill="none" stroke="#2a78d6" stroke-width="2"/>
+              </svg>
+              <p class="mock-meta" style="margin-top:8px;">Base case crosses <b style="color:#1c1c1e;">$3.1M</b> at <b style="color:#1c1c1e;">age 61</b> — retire-at-62 target holds.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 4: ACTIONS ── -->
+    <div class="section-block" id="screen-4">
+      <p class="P-400-SP section-tag">Screen 4 · Actions</p>
+      <h1 class="H1-700">Commitments become calendared work automatically</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">Approving the summary generates editable action items with due dates and reminders — inline edit, add, delete, and two-way calendar sync</p>
+      </div>
+
+      <!-- Interactive prototype — Safari frame, boots straight into Actions -->
+      <div class="feat1-scan">
+        <div class="feat1-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                app.meridiannotes.com
+              </div>
+            </div>
+          </div>
+          <!-- Live app -->
+          <div class="safari-app-wrap">
+            <iframe src="dist/index.html?screen=actions" title="Meridian Notes — Actions screen, interactive prototype" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="try-hint">
+        <span class="pulse-dot"></span>
+        Interactive prototype — starts at Action items: edit an item, set a reminder, add a task, then continue to the client view
+      </div>
+
+      <div class="two-col" style="margin-top: 0;">
+        <div>
+          <p class="P-400-SG">Generated tasks</p>
+          <h2 class="H2-600">Editable, scheduled, reminded</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <ol style="padding-left: 18px; list-style: decimal;">
+              <li class="P-400-G-List">Inline text edit on every item</li>
+              <li class="P-400-G-List">Due-date picker scoped to the current week</li>
+              <li class="P-400-G-List">Per-item reminder toggle</li>
+            </ol>
+          </div>
+          <div class="img-block mock-stage" style="padding:0; background:#f8f8f8;">
+            <iframe src="dist/index.html?embed=action-item" title="Meridian Notes — action item, interactive component" loading="lazy" style="width:100%; height:100%; border:0; display:block;"></iframe>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Design decision</p>
+          <h2 class="H2-600">Shared state with the Today board</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">These are the same task objects the advisor sees on tomorrow morning's week board — the meeting's output lands directly in the daily habit loop, not in a separate list that goes stale</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card" style="text-align:center;">
+              <div class="mock-label">Calendar</div>
+              <p style="margin-bottom:12px;">Two-way sync with Apple &amp; Google Calendar</p>
+              <span class="mock-pill purple">✓ 3 items scheduled this week</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 5: CLIENT VIEW ── -->
+    <div class="section-block" id="screen-5">
+      <p class="P-400-SP section-tag">Screen 5 · Client view</p>
+      <h1 class="H1-700">Confirmation is per-point, because "I agree" means nobody read it</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">The client opens a PIN-gated page with a plain-language, first-person rewrite of the summary. They confirm each point, can dispute any point back to the advisor, ask questions, and sign by typing their name — producing the signed acknowledgment stored to the compliance audit trail</p>
+      </div>
+
+      <!-- Interactive prototype — Safari frame, boots straight into Client view -->
+      <div class="feat1-scan">
+        <div class="feat1-safari">
+          <!-- Chrome bar -->
+          <div class="safari-chrome">
+            <div class="safari-lights">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="safari-url-wrap">
+              <div class="safari-url">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                app.meridiannotes.com
+              </div>
+            </div>
+          </div>
+          <!-- Live app -->
+          <div class="safari-app-wrap">
+            <iframe src="dist/index.html?screen=client" title="Meridian Notes — Client view, interactive prototype" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="try-hint">
+        <span class="pulse-dot"></span>
+        Interactive prototype — starts at Client view: enter PIN 0412, confirm or dispute a point, and sign
+      </div>
+
+      <div class="two-col" style="margin-top: 0;">
+        <div>
+          <p class="P-400-SG">Access</p>
+          <h2 class="H2-600">A PIN, not another password</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Low-friction access for a possibly elderly or non-technical client base, with an error state and a "Text me my code" recovery path</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card" style="text-align:center; max-width:320px;">
+              <div class="mock-label">Your meeting summary</div>
+              <p style="margin-bottom:14px;">Enter your 4-digit code to open.</p>
+              <div style="display:flex; gap:10px; justify-content:center; margin-bottom:14px;">
+                <span class="mock-input" style="width:44px; text-align:center;">•</span>
+                <span class="mock-input" style="width:44px; text-align:center;">•</span>
+                <span class="mock-input" style="width:44px; text-align:center;">•</span>
+                <span class="mock-input" style="width:44px; text-align:center;"></span>
+              </div>
+              <span style="color:#4E008E; font-size:13px; text-decoration:underline;">Text me my code</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Plain language</p>
+          <h2 class="H2-600">Two versions of the truth, on purpose</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">"Trim NVDA concentration 18% → 10%" becomes "Sarah will begin a scheduled reduction of my NVIDIA stock…" — jargon-free, first-person copy is what makes confirmation meaningful</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label">Please confirm each point</div>
+              <div class="mock-row">
+                <span class="mock-check on"></span>
+                <div>Sarah will begin a scheduled reduction of my NVIDIA stock from 18% to 10% of my portfolio over the next six months.</div>
+              </div>
+              <div class="mock-row">
+                <span class="mock-check"></span>
+                <div>My retirement savings target remains $3.1M by age 65.<br>
+                <span style="color:#b91c1c; font-size:12px; font-weight:500;">This isn't right — remove &amp; send back to Sarah</span></div>
+              </div>
+              <div style="margin-top:14px;">
+                <span class="mock-input" style="display:block; margin-bottom:10px;">Type your full name to sign</span>
+                <span class="mock-btn disabled" style="width:100%;">Confirm &amp; send to Sarah</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <p class="P-400-SG">Dispute path</p>
+          <h2 class="H2-600">Disputes are a feature, not a failure</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">Any point can be removed and routed back to the advisor with undo. A nonzero-but-low dispute rate is healthy — it proves clients are actually reading</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card">
+              <div class="mock-label" style="color:#92400e;">Sent back to Sarah for correction (1)</div>
+              <div class="mock-row" style="border-top:0; align-items:center; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:12px;">
+                <div style="min-width:0; flex:1;">
+                  <p style="text-decoration:line-through; opacity:.65; margin-bottom:0;">"My retirement savings target remains $3.1M by age 65."</p>
+                </div>
+                <span style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:#92400e; flex-shrink:0;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 7"/></svg>
+                  Undo
+                </span>
+              </div>
+              <p class="mock-meta" style="margin-top:12px;">Routed back to the advisor's summary for correction — a read receipt, not a support ticket</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="P-400-SG">Audit trail</p>
+          <h2 class="H2-600">The record that closes the loop</h2>
+          <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+            <p class="P-400-G">"Signed acknowledgment stored to the client file (compliance audit trail)" — plus a next-meeting card with a real .ics download and Google Calendar link</p>
+          </div>
+          <div class="img-block mock-stage">
+            <div class="mock-card" style="text-align:center;">
+              <div style="display:flex; justify-content:center; margin-bottom:10px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div class="mock-label" style="margin-bottom:6px;">Michael confirmed the summary</div>
+              <p style="margin-bottom:14px;">Signed acknowledgment stored to the client file (compliance audit trail)</p>
+              <span class="mock-pill purple" style="margin-bottom:14px;">Next meeting · Tue, Oct 7 · 10:00 AM</span>
+              <div style="display:flex; gap:10px; justify-content:center; margin-top:14px;">
+                <span class="mock-btn ghost">Add to Apple Calendar</span>
+                <span class="mock-btn ghost">Add to Google Calendar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── METRICS ── -->
+    <div class="section-block" id="metrics">
+      <p class="P-400-SP section-tag">Metrics</p>
+      <h1 class="H1-700">One north star, and a metric that keeps the gate honest</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G"><strong>North star: client confirmation rate</strong> — percent of sent summaries the client opens, checks every point, and signs within 7 days. It's the behavior the entire client screen is built to produce</p>
+      </div>
+      <div class="feat-cards-grid">
+
+        <div style="background:#f8f8f8; border-radius:16px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--space-2);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+          <h3 class="H3-600">Flag resolution integrity</h3>
+          <p class="P-400-G-List" style="margin-bottom:0;">Do advisors actually edit flagged claims, or click through? Detects whether the accuracy gate is real or theater</p>
+        </div>
+
+        <div style="background:#f8f8f8; border-radius:16px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--space-2);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/>
+          </svg>
+          <h3 class="H3-600">Dispute rate</h3>
+          <p class="P-400-G-List" style="margin-bottom:0;">Low-but-nonzero is healthy (clients are reading); rising means summary quality is slipping</p>
+        </div>
+
+        <div style="background:#f8f8f8; border-radius:16px; padding:32px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--space-2);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4E008E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
+          </svg>
+          <h3 class="H3-600">Action item completion</h3>
+          <p class="P-400-G-List" style="margin-bottom:0;">Percent of generated tasks completed by their due date — proves the meeting output turns into real work</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── REFLECTION ── -->
+    <div class="section-block" id="reflection">
+      <p class="P-400-SP section-tag">Reflection</p>
+      <h1 class="H1-700">What we'd validate next</h1>
+      <div class="P-400-G section-body" style="margin-bottom:var(--space-4);">
+        <p class="P-400-G">The prototype validates the workflow, not the ML. Before investing in real speech-to-text and confidence scoring, four questions decide the roadmap</p>
+      </div>
+
+      <div class="reflection-flex">
+        <div class="reflection-text">
+          <h3 class="H3-600">Riskiest assumptions, in order</h3>
+          <ol class="P-400-G" style="padding-left:18px; list-style:decimal;">
+            <li class="P-400-G-List">Does the accuracy gate produce real verification — or rubber-stamping? Seed summaries with one genuine error and watch 5–8 advisors</li>
+            <li class="P-400-G-List">Will clients complete per-point confirmation, or check-all in 20 seconds? Pilot with 15–20 real clients</li>
+            <li class="P-400-G-List">Is the personal hook welcome or creepy? If clients react badly, restrict to CRM-sourced notes only</li>
+            <li class="P-400-G-List">Can any STT vendor get dollar figures reliably right? If not, V2 leads with in-meeting tap-to-correct instead of post-hoc flags</li>
+          </ol>
+        </div>
+        <div class="reflection-text" style="border-left:1px solid var(--border);">
+          <h3 class="H3-600">Trade-offs I'd defend</h3>
+          <ul class="P-400-G reflection-list">
+            <li class="P-400-G-List">Gated wizard over free navigation — the compliance value depends on the order</li>
+            <li class="P-400-G-List">Blocking gate over advisory warnings</li>
+            <li class="P-400-G-List">Per-point confirmation over one signature</li>
+            <li class="P-400-G-List">Plain-language client copy generated from approved bullets, never independently</li>
+            <li class="P-400-G-List">PIN over full login — with rate limiting and real code delivery in production</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </main>
+</div>
+
+<script>
+  // ── Top nav slot-machine entrance ──
+  (function() {
+    var slots = document.querySelectorAll('.tn-slot');
+    slots.forEach(function(slot) {
+      var ghost = slot.querySelector('.tn-ghost');
+      slot.style.width = ghost.scrollWidth + 'px';
+    });
+    requestAnimationFrame(function() {
+      slots.forEach(function(slot) { slot.classList.add('entered'); });
+    });
+  })();
+
+  // ── Top nav compact on scroll-down, expand on scroll-up ──
+  (function() {
+    var nav = document.getElementById('top-nav');
+    var lastY = window.scrollY;
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        var y = window.scrollY;
+        if (y > lastY && y > 60) nav.classList.add('nav-compact');
+        else if (y < lastY) nav.classList.remove('nav-compact');
+        lastY = y;
+        ticking = false;
+      });
+    }, { passive: true });
+  })();
+
+  // ── Sidebar scroll-triggered show/hide ──
+  (function() {
+    const SHOW_AT = 160;
+    const HIDE_AT = 60;
+    let sidebarVisible = false;
+    let staggerTimers = [];
+
+    const sidebarHome = document.querySelector('.sidebar-home');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    function showSidebar() {
+      if (sidebarVisible) return;
+      sidebarVisible = true;
+      staggerTimers.forEach(clearTimeout);
+      staggerTimers = [];
+      if (sidebarHome) sidebarHome.classList.add('visible');
+      navLinks.forEach((btn, i) => {
+        staggerTimers.push(setTimeout(() => btn.classList.add('visible'), i * 40));
+      });
+    }
+
+    function hideSidebar() {
+      if (!sidebarVisible) return;
+      sidebarVisible = false;
+      staggerTimers.forEach(clearTimeout);
+      staggerTimers = [];
+      if (sidebarHome) sidebarHome.classList.remove('visible');
+      navLinks.forEach(btn => btn.classList.remove('visible'));
+    }
+
+    window.addEventListener('scroll', function() {
+      const y = window.scrollY;
+      if (y > SHOW_AT) showSidebar();
+      else if (y < HIDE_AT) hideSidebar();
+    }, { passive: true });
+  })();
+
+  // ── Sidebar smooth scroll ──
+  document.querySelectorAll('.nav-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = document.getElementById(btn.dataset.target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // ── Scroll-spy ──
+  const navLinks = document.querySelectorAll('.nav-link');
+  const spySections = [...navLinks].map(btn => document.getElementById(btn.dataset.target)).filter(Boolean);
+  const spyObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(btn => btn.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+  spySections.forEach(s => spyObs.observe(s));
+</script>
+
+<!-- ════ FOOTER ════ -->
+<style>
+  .site-footer {
+    padding: var(--space-6) 0 var(--space-7);
+    background: #ffffff;
+  }
+  .site-footer-inner {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 48px);
+  }
+  .footer-bottom {
+    padding-top: 24px;
+    border-top: 1px solid var(--border, #e8e8e8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-copy {
+    font-size: 1rem;
+    color: #808080;
+  }
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    list-style: none;
+  }
+  .footer-nav a {
+    font-size: 1rem;
+    color: #1c1c1e;
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  .footer-nav a:hover { color: #4E008E; }
+</style>
+
+<footer class="site-footer" id="footer">
+  <div class="site-footer-inner">
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Todd Wu. All rights reserved.</span>
+      <ul class="footer-nav">
+        <li><a href="index.html?skip#home">Home</a></li>
+        <li><a href="mailto:519todd@gmail.com">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
