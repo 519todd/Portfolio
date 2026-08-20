@@ -322,6 +322,13 @@
       transform: translateY(-50%) scale(1.06);
       box-shadow: 0 4px 16px rgba(0,0,0,0.14);
     }
+    .scroll-arrow:focus-visible {
+      outline: 2px solid #4E008E;
+      outline-offset: 3px;
+    }
+    .scroll-arrow:active {
+      transform: translateY(-50%) scale(0.94);
+    }
     .scroll-arrow svg { width: 16px; height: 16px; }
 
     /* ═══════════════════════════════════
@@ -1106,7 +1113,14 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s var(--ease-fast), transform 0.3s var(--ease-fast);
+  }
+  /* Specificity must beat `body.loaded > :not(.preloader)` from the preloader reveal. */
+  body.loaded > .social-dock.is-hidden,
+  .social-dock.is-hidden {
+    opacity: 0;
+    transform: translateX(14px);
+    pointer-events: none;
   }
   .social-dock a {
     display: flex;
@@ -1148,7 +1162,7 @@
 </div>
 
 <!-- SCROLL ARROW -->
-<a class="scroll-arrow" href="#projects" aria-label="Scroll to projects">
+<a class="scroll-arrow" href="#projects" aria-label="Scroll to Selected Work">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M6 9l6 6 6-6"/>
   </svg>
@@ -1324,27 +1338,57 @@
 
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // ── Scroll arrow: flip direction at bottom of page ──
+  // ── Scroll arrow: hero → Selected Work → Beautiful Words → top ──
+  //    Also hides the social dock once Beautiful Words is in view so the
+  //    icons never overlap the footer.
   (function () {
     const arrow = document.querySelector('.scroll-arrow');
+    const projects = document.getElementById('projects');
+    const words = document.getElementById('words');
+    const dock = document.querySelector('.social-dock');
+    if (!arrow || !projects || !words) return;
+
     const svgPath = arrow.querySelector('svg path');
     const downPath = 'M6 9l6 6 6-6';
     const upPath   = 'M18 15l-6-6-6 6';
 
-    function update() {
-      const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
-      if (nearBottom) {
-        arrow.href = '#home';
-        arrow.setAttribute('aria-label', 'Scroll to top');
-        svgPath.setAttribute('d', upPath);
-      } else {
-        arrow.href = '#projects';
-        arrow.setAttribute('aria-label', 'Scroll to projects');
-        svgPath.setAttribute('d', downPath);
+    let ticking = false;
+
+    function setTarget(hash, label, path) {
+      if (arrow.getAttribute('href') !== hash) {
+        arrow.setAttribute('href', hash);
+        arrow.setAttribute('aria-label', label);
+        svgPath.setAttribute('d', path);
       }
     }
 
-    window.addEventListener('scroll', update, { passive: true });
+    function update() {
+      ticking = false;
+      const vh = window.innerHeight;
+      // A section counts as "the one being viewed" once its top crosses
+      // the vertical midpoint of the viewport.
+      const projectsReached = projects.getBoundingClientRect().top <= vh * 0.5;
+      const wordsReached = words.getBoundingClientRect().top <= vh * 0.5;
+
+      if (wordsReached) {
+        setTarget('#home', 'Scroll to top', upPath);
+      } else if (projectsReached) {
+        setTarget('#words', 'Scroll to Beautiful Words', downPath);
+      } else {
+        setTarget('#projects', 'Scroll to Selected Work', downPath);
+      }
+
+      if (dock) dock.classList.toggle('is-hidden', wordsReached);
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
     update();
   })();
 
@@ -1365,19 +1409,7 @@
 
   cards.forEach(card => revealObserver.observe(card));
 
-  // ── Hide social dock when last project card is in view ──
-  (function () {
-    const dock = document.querySelector('.social-dock');
-    const lastCard = cards[cards.length - 1];
-    if (!dock || !lastCard) return;
-    const dockObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        dock.style.opacity = entry.isIntersecting ? '0' : '';
-        dock.style.pointerEvents = entry.isIntersecting ? 'none' : '';
-      });
-    }, { threshold: 0.1 });
-    dockObserver.observe(lastCard);
-  })();
+  // Social dock visibility is driven by the scroll-arrow observer above.
 </script>
 
 <!-- ════ PRELOADER SCRIPT ════ -->
